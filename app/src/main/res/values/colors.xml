@@ -3,4 +3,21 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+
+
+
+    <color name="grey">#cccccc</color>
+    <color name="white">#FFFFFF</color>
+    <color name="grey_700">#646464</color>
+    <color name="black">#000000</color>
+
+    <!-- using the "Light Blue" Material Palette -->
+    <!-- 500 -->
+    <color name="primary">#03A9F4</color>
+    <!-- 700 -->
+    <color name="primary_dark">#0288D1</color>
+    <!-- 100 -->
+    <color name="primary_light">#B3E5FC</color>
+
 </resources>

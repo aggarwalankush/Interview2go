@@ -112,7 +112,7 @@ public class InterviewProvider extends ContentProvider {
                         projection,
                         selection,
                         selectionArgs,
-                        null,
+                        InterviewEntry.COLUMN_TOPIC,
                         null,
                         sortOrder,
                         null
