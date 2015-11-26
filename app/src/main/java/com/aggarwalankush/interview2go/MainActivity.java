@@ -53,13 +53,14 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = (TextView) findViewById(R.id.textview);
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            InterviewSyncAdapter.syncImmediately(this);
+//            InterviewSyncAdapter.syncImmediately(this);
 
-            Cursor c = getContentResolver().query(InterviewEntry.CONTENT_URI, new String[]{InterviewEntry.COLUMN_SOLUTION}, null, null, null);
+            Cursor c = getContentResolver().query(InterviewEntry.CONTENT_URI, null, null, null, null);
             if(c!=null){
 //                Log.d("hello", DatabaseUtils.dumpCursorToString(c));
                 c.moveToFirst();
-                tv.setText(c.getString(0));
+                c.moveToNext();
+               tv.setText(c.getString(0) +"\n"+c.getString(1) +"\n"+c.getString(2) +"\n"+c.getString(3) +"\n"+c.getString(4) +"\n");
 
             }
             return true;

@@ -17,23 +17,20 @@ import android.util.Log;
 
 import com.aggarwalankush.interview2go.R;
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.Vector;
 
 public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -56,13 +53,13 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
-        TreeMap<String, ArrayList<String>> topicToQuestions = new TreeMap<>();
+        TreeMap<String, TreeMap<String, String>> topicToQueToOutput = new TreeMap<>();
 
         try {
             final String SERVER_BASE_URL = getContext().getString(R.string.server_base_url);
-            String server_informer_file = getContext().getString(R.string.server_informer_file);
+            String server_output_file = getContext().getString(R.string.server_output_file);
 
-            Uri builtUri = Uri.parse(SERVER_BASE_URL).buildUpon().appendPath(server_informer_file).build();
+            Uri builtUri = Uri.parse(SERVER_BASE_URL).buildUpon().appendPath(server_output_file).build();
             URL url = new URL(builtUri.toString());
 
             // Create the request to OpenWeatherMap, and open the connection
@@ -87,18 +84,20 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
             if (builder.length() == 0) {
                 return;
             }
-            String informerJsonStr = builder.toString();
-            Log.d(LOG_TAG, informerJsonStr);
-
-            JsonObject jsonObject = new JsonParser().parse(informerJsonStr).getAsJsonObject();
-            Type type = new TypeToken<ArrayList<String>>() {
-            }.getType();
+            String outputJsonStr = builder.toString();
+            JsonParser jsonParser = new JsonParser();
+            JsonObject jsonObject = jsonParser.parse(outputJsonStr).getAsJsonObject();
 
             for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 String topic = entry.getKey();
-                String jsonElem = entry.getValue().getAsString();
-                ArrayList<String> list = new Gson().fromJson(jsonElem, type);
-                topicToQuestions.put(topic, list);
+                JsonObject quesSolObj = jsonParser.parse(entry.getValue().getAsString()).getAsJsonObject();
+                TreeMap<String, String> quesToOutput = new TreeMap<>();
+                for (Entry<String, JsonElement> quesOutputEntry : quesSolObj.entrySet()) {
+                    String question = quesOutputEntry.getKey();
+                    String solution = quesOutputEntry.getValue().getAsString();
+                    quesToOutput.put(question, solution);
+                }
+                topicToQueToOutput.put(topic, quesToOutput);
             }
         } catch (IOException e) {
             Log.e(LOG_TAG, "IO Error ", e);
@@ -117,13 +116,17 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
 
-        for (Entry<String, ArrayList<String>> entry : topicToQuestions.entrySet()) {
-            String topic = entry.getKey();
-            ArrayList<String> questions = entry.getValue();
-            for (String question : questions) {
+        Vector<ContentValues> cVVector = new Vector<>();
+
+        for (Entry<String, TreeMap<String, String>> stringTreeMapEntry : topicToQueToOutput.entrySet()) {
+            String topic = stringTreeMapEntry.getKey();
+            TreeMap<String, String> quesToOutput = stringTreeMapEntry.getValue();
+            for (Entry<String, String> quesToOutputEntry : quesToOutput.entrySet()) {
+                String question = quesToOutputEntry.getKey();
+                String output = quesToOutputEntry.getValue();
                 try {
                     final String SERVER_BASE_URL = getContext().getString(R.string.server_base_url);
-                    Uri builtUri = Uri.parse(SERVER_BASE_URL).buildUpon().appendPath(topic).appendPath(question).build();
+                    Uri builtUri = Uri.parse(SERVER_BASE_URL).buildUpon().appendPath(topic).appendPath(question + ".java").build();
                     URL url = new URL(builtUri.toString());
 
                     // Create the request to OpenWeatherMap, and open the connection
@@ -135,37 +138,29 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                     InputStream inputStream = urlConnection.getInputStream();
                     StringBuilder builder = new StringBuilder();
                     if (inputStream == null) {
-                        // Nothing to do.
                         return;
                     }
                     reader = new BufferedReader(new InputStreamReader(inputStream));
-
                     String line;
-                    int count=0;
                     while ((line = reader.readLine()) != null) {
-                        builder.append(line+"\n");
-                        count++;
+                        builder.append(line);
+                        builder.append("\n");
                     }
 
                     if (builder.length() == 0) {
                         return;
                     }
 
-
                     String solution = builder.toString();
-                    Log.d(LOG_TAG, solution);
-                    Log.d(LOG_TAG, count + "");
 
                     ContentValues contentValues = new ContentValues();
-
                     contentValues.put(InterviewEntry.COLUMN_TOPIC, topic);
                     contentValues.put(InterviewEntry.COLUMN_QUESTION, question);
                     contentValues.put(InterviewEntry.COLUMN_SOLUTION, solution);
-                    contentValues.put(InterviewEntry.COLUMN_OUTPUT, " ");
+                    contentValues.put(InterviewEntry.COLUMN_OUTPUT, output);
 
-                    Log.d(LOG_TAG,getContext().getContentResolver().insert(InterviewEntry.CONTENT_URI, contentValues)+"");
+                    cVVector.add(contentValues);
 
-                    break;
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "IO Error ", e);
                 } finally {
@@ -181,9 +176,15 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                 }
             }
-            break;
         }
 
+        if (cVVector.size() > 0) {
+            ContentValues[] cvArray = new ContentValues[cVVector.size()];
+            cVVector.toArray(cvArray);
+            getContext().getContentResolver().bulkInsert(InterviewEntry.CONTENT_URI, cvArray);
+        }
+
+        Log.d(LOG_TAG, "Interview Sync Complete. " + cVVector.size() + " Inserted");
     }
 
 
