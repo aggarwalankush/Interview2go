@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Interview2go</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Account type (for sync-adapter authenticator) -->
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">interview2go.aggarwalankush.com</string>
+    <string name="content_authority">com.aggarwalankush.interview2go.provider</string>
+
+    <string name="server_base_url">https://raw.githubusercontent.com/aggarwalankush/CodeBlob/master/src</string>
+    <string name="server_informer_file">Informer.json</string>
+</resources>
