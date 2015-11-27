@@ -8,7 +8,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.util.Log;
 
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 
@@ -74,8 +73,6 @@ public class InterviewProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             // "interview/*/*"
             case INTERVIEW_WITH_TOPIC_AND_QUESTION: {
-                Log.d(LOG_TAG, "Interview with topic and question called");
-
                 String topic = InterviewEntry.getTopicFromUri(uri);
                 String question = InterviewEntry.getQuestionFromUri(uri);
                 retCursor = sQueryBuilder.query(mOpenHelper.getReadableDatabase(),
@@ -90,8 +87,6 @@ public class InterviewProvider extends ContentProvider {
             }
             // "interview/*"
             case INTERVIEW_WITH_TOPIC: {
-                Log.d(LOG_TAG, "Interview with topic called");
-
                 String topic = InterviewEntry.getTopicFromUri(uri);
                 retCursor = sQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                         projection,
@@ -105,7 +100,6 @@ public class InterviewProvider extends ContentProvider {
             }
             // "interview"
             case INTERVIEW: {
-                Log.d(LOG_TAG, "Interview called");
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         true,
                         InterviewEntry.TABLE_NAME,

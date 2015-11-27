@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.aggarwalankush.interview2go"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="com.aggarwalankush.interview2go"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -25,6 +26,24 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".QuestionActivity"
+            android:label="@string/title_activity_question"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.aggarwalankush.interview2go.MainActivity"/>
+        </activity>
+        <activity
+            android:name=".SolutionActivity"
+            android:label="@string/title_activity_solution"
+            android:parentActivityName=".QuestionActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.aggarwalankush.interview2go.QuestionActivity"/>
         </activity>
 
         <provider
@@ -56,16 +75,6 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter"/>
         </service>
-
-        <activity
-            android:name=".QuestionActivity"
-            android:label="@string/title_activity_question"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.aggarwalankush.interview2go.MainActivity"/>
-        </activity>
     </application>
 
 </manifest>

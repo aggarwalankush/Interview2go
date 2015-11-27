@@ -1,5 +1,6 @@
 package com.aggarwalankush.interview2go;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +19,7 @@ public class QuestionActivity extends AppCompatActivity implements QuestionActiv
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
-            arguments.putParcelable(QuestionActivityFragment.QUESTION_URI, getIntent().getData());
+            arguments.putParcelable(QuestionActivityFragment.TOPIC_URI, getIntent().getData());
 
             QuestionActivityFragment questionActivityFragment = new QuestionActivityFragment();
             questionActivityFragment.setArguments(arguments);
@@ -33,6 +34,8 @@ public class QuestionActivity extends AppCompatActivity implements QuestionActiv
 
     @Override
     public void onItemSelected(Uri questionUri) {
-        Log.d(LOG_TAG, "item clicked " + questionUri);
+        Log.d(LOG_TAG, "question clicked " + questionUri);
+        Intent intent = new Intent(this, SolutionActivity.class).setData(questionUri);
+        startActivity(intent);
     }
 }

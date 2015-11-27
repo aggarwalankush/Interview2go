@@ -22,8 +22,8 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
 
     private static final String LOG_TAG = QuestionActivityFragment.class.getSimpleName();
 
-    static final String QUESTION_URI = "URI";
-    private Uri mUri;
+    static final String TOPIC_URI = "URI";
+    private static Uri mUri;
 
     private QuestionAdapter mQuestionAdapter;
 
@@ -50,6 +50,7 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+//        Log.d(LOG_TAG, "onActivityCreated");
         getLoaderManager().initLoader(QUESTION_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
@@ -58,10 +59,16 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+//        Log.d(LOG_TAG, "onCreateView");
 
         Bundle arguments = getArguments();
+//        Log.d(LOG_TAG, arguments.toString());
         if (arguments != null) {
-            mUri = arguments.getParcelable(QuestionActivityFragment.QUESTION_URI);
+            Uri oldUri = mUri;
+            mUri = arguments.getParcelable(QuestionActivityFragment.TOPIC_URI);
+            if (mUri == null) {
+                mUri = oldUri;
+            }
         }
 
         View rootView = inflater.inflate(R.layout.fragment_question, container, false);
@@ -83,16 +90,18 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
 
         mRecyclerView.setAdapter(mQuestionAdapter);
 
+
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
-
         return rootView;
     }
 
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+//        Log.d(LOG_TAG, "onSaveInstanceState");
+
         if (mPosition != RecyclerView.NO_POSITION) {
             outState.putInt(SELECTED_KEY, mPosition);
         }
@@ -102,20 +111,27 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // Sort order:  Ascending, by topic name.
-        String sortOrder = InterviewEntry.COLUMN_QUESTION + " ASC";
-        return new CursorLoader(
-                getActivity(),
-                mUri,
-                QUESTION_COLUMNS,
-                null,
-                null,
-                sortOrder);
+//        Log.d(LOG_TAG, "onCreateLoader");
+
+        if (mUri != null) {
+            // Sort order:  Ascending, by topic name.
+            String sortOrder = InterviewEntry.COLUMN_QUESTION + " ASC";
+            return new CursorLoader(
+                    getActivity(),
+                    mUri,
+                    QUESTION_COLUMNS,
+                    null,
+                    null,
+                    sortOrder);
+        }
+        return null;
     }
 
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+//        Log.d(LOG_TAG, "onLoadFinished");
+
         mQuestionAdapter.swapCursor(cursor);
         if (mPosition != RecyclerView.NO_POSITION) {
             mRecyclerView.smoothScrollToPosition(mPosition);
@@ -124,6 +140,8 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
     }
 
     private void updateEmptyView() {
+//        Log.d(LOG_TAG, "updateEmptyView");
+
         if (mQuestionAdapter.getItemCount() == 0) {
             TextView tv = (TextView) getView().findViewById(R.id.recyclerview_question_empty);
             if (null != tv && !Utility.isNetworkAvailable(getActivity())) {
@@ -132,8 +150,10 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
         }
     }
 
+
     @Override
     public void onDestroy() {
+//        Log.d(LOG_TAG, "onDestroy");
         super.onDestroy();
         if (null != mRecyclerView) {
             mRecyclerView.clearOnScrollListeners();
@@ -142,6 +162,7 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+//        Log.d(LOG_TAG, "onLoaderReset");
         mQuestionAdapter.swapCursor(null);
     }
 
