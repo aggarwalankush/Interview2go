@@ -14,35 +14,43 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aggarwalankush.interview2go.QuestionAdapter.QuestionAdapterOnClickHandler;
+import com.aggarwalankush.interview2go.QuestionAdapter.QuestionAdapterViewHolder;
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 
-public class TopicFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class QuestionActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final String LOG_TAG = TopicFragment.class.getSimpleName();
-    private TopicAdapter mTopicAdapter;
+    private static final String LOG_TAG = QuestionActivityFragment.class.getSimpleName();
+
+    static final String QUESTION_URI = "URI";
+    private Uri mUri;
+
+    private QuestionAdapter mQuestionAdapter;
 
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
 
     private static final String SELECTED_KEY = "selected_position";
 
-    private static final int TOPIC_LOADER = 0;
+    private static final int QUESTION_LOADER = 0;
 
-    private static final String[] TOPIC_COLUMNS = {
+    private static final String[] QUESTION_COLUMNS = {
             InterviewEntry._ID,
-            InterviewEntry.COLUMN_TOPIC
+            InterviewEntry.COLUMN_QUESTION
     };
-    static final int COL_ID = 0;
-    static final int COL_TOPIC = 1;
+
+    public static final int COL_ID = 0;
+    public static final int COL_QUESTION = 1;
+
 
     public interface Callback {
-        void onItemSelected(Uri topicUri);
+        void onItemSelected(Uri questionUri);
     }
 
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(TOPIC_LOADER, null, this);
+        getLoaderManager().initLoader(QUESTION_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -51,23 +59,29 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_topic);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mUri = arguments.getParcelable(QuestionActivityFragment.QUESTION_URI);
+        }
+
+        View rootView = inflater.inflate(R.layout.fragment_question, container, false);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_question);
 
         // Set the layout manager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        View emptyView = rootView.findViewById(R.id.recyclerview_topic_empty);
+        View emptyView = rootView.findViewById(R.id.recyclerview_question_empty);
         mRecyclerView.setHasFixedSize(true);
 
-        mTopicAdapter = new TopicAdapter(getActivity(), new TopicAdapter.TopicAdapterOnClickHandler() {
+        mQuestionAdapter = new QuestionAdapter(getActivity(), new QuestionAdapterOnClickHandler() {
             @Override
-            public void onClick(String topic, TopicAdapter.TopicAdapterViewHolder vh) {
-                ((Callback) getActivity()).onItemSelected(InterviewEntry.buildTopic(topic));
+            public void onClick(String question, QuestionAdapterViewHolder vh) {
+                String topic = InterviewEntry.getTopicFromUri(mUri);
+                ((Callback) getActivity()).onItemSelected(InterviewEntry.buildTopicWithQuestion(topic, question));
                 mPosition = vh.getAdapterPosition();
             }
         }, emptyView);
 
-        mRecyclerView.setAdapter(mTopicAdapter);
+        mRecyclerView.setAdapter(mQuestionAdapter);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
@@ -89,11 +103,11 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Sort order:  Ascending, by topic name.
-        String sortOrder = InterviewEntry.COLUMN_TOPIC + " ASC";
+        String sortOrder = InterviewEntry.COLUMN_QUESTION + " ASC";
         return new CursorLoader(
                 getActivity(),
-                InterviewEntry.CONTENT_URI,
-                TOPIC_COLUMNS,
+                mUri,
+                QUESTION_COLUMNS,
                 null,
                 null,
                 sortOrder);
@@ -102,7 +116,7 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mTopicAdapter.swapCursor(cursor);
+        mQuestionAdapter.swapCursor(cursor);
         if (mPosition != RecyclerView.NO_POSITION) {
             mRecyclerView.smoothScrollToPosition(mPosition);
         }
@@ -110,8 +124,8 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     private void updateEmptyView() {
-        if (mTopicAdapter.getItemCount() == 0) {
-            TextView tv = (TextView) getView().findViewById(R.id.recyclerview_topic_empty);
+        if (mQuestionAdapter.getItemCount() == 0) {
+            TextView tv = (TextView) getView().findViewById(R.id.recyclerview_question_empty);
             if (null != tv && !Utility.isNetworkAvailable(getActivity())) {
                 tv.setText(R.string.empty_list_no_network);
             }
@@ -128,7 +142,7 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mTopicAdapter.swapCursor(null);
+        mQuestionAdapter.swapCursor(null);
     }
 
 }

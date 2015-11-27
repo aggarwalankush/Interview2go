@@ -8,31 +8,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aggarwalankush.interview2go.QuestionAdapter.QuestionAdapterViewHolder;
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 
-public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicAdapterViewHolder> {
+public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHolder> {
 
     private Cursor mCursor;
     final private Context mContext;
-    final private TopicAdapterOnClickHandler mClickHandler;
+    final private QuestionAdapterOnClickHandler mClickHandler;
     final private View mEmptyView;
 
-    public TopicAdapter(Context context, TopicAdapterOnClickHandler clickHandler, View emptyView) {
+    public QuestionAdapter(Context context, QuestionAdapterOnClickHandler clickHandler, View emptyView) {
         mContext = context;
         mClickHandler = clickHandler;
         mEmptyView = emptyView;
     }
 
-    public interface TopicAdapterOnClickHandler {
-        void onClick(String topic, TopicAdapterViewHolder vh);
+    public interface QuestionAdapterOnClickHandler {
+        void onClick(String question, QuestionAdapterViewHolder vh);
     }
 
-    public class TopicAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final TextView mTopicView;
+    public class QuestionAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public final TextView mQuestionView;
 
-        public TopicAdapterViewHolder(View view) {
+        public QuestionAdapterViewHolder(View view) {
             super(view);
-            mTopicView = (TextView) view.findViewById(R.id.tv_topic);
+            mQuestionView = (TextView) view.findViewById(R.id.tv_question);
             view.setOnClickListener(this);
         }
 
@@ -40,29 +41,29 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicAdapter
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            int topic_index = mCursor.getColumnIndex(InterviewEntry.COLUMN_TOPIC);
-            mClickHandler.onClick(mCursor.getString(topic_index), this);
+            int question_index = mCursor.getColumnIndex(InterviewEntry.COLUMN_QUESTION);
+            mClickHandler.onClick(mCursor.getString(question_index), this);
         }
     }
 
 
     @Override
-    public TopicAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public QuestionAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         if (viewGroup instanceof RecyclerView) {
-            int layoutId = R.layout.list_item_topic;
+            int layoutId = R.layout.list_item_question;
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(layoutId, viewGroup, false);
             view.setFocusable(true);
-            return new TopicAdapterViewHolder(view);
+            return new QuestionAdapterViewHolder(view);
         } else {
             throw new RuntimeException("Not bound to RecyclerView");
         }
     }
 
     @Override
-    public void onBindViewHolder(TopicAdapterViewHolder topicAdapterViewHolder, int position) {
+    public void onBindViewHolder(QuestionAdapterViewHolder questionAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
-        String topic = mCursor.getString(TopicFragment.COL_TOPIC);
-        topicAdapterViewHolder.mTopicView.setText(topic);
+        String question = mCursor.getString(QuestionActivityFragment.COL_QUESTION);
+        questionAdapterViewHolder.mQuestionView.setText(question);
     }
 
 

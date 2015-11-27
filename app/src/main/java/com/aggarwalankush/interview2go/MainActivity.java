@@ -1,5 +1,6 @@
 package com.aggarwalankush.interview2go;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import com.aggarwalankush.interview2go.sync.InterviewSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements TopicFragment.Callback {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,5 +70,7 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
     @Override
     public void onItemSelected(Uri topicUri) {
         Log.d(LOG_TAG, "item clicked " + topicUri);
+        Intent intent = new Intent(this, QuestionActivity.class).setData(topicUri);
+        startActivity(intent);
     }
 }

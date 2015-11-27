@@ -1,15 +1,19 @@
 <resources>
     <string name="app_name">Interview2go</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_question">QuestionActivity</string>
 
     <!-- Account type (for sync-adapter authenticator) -->
     <!-- SyncAdapter related -->
     <string name="sync_account_type">interview2go.aggarwalankush.com</string>
     <string name="content_authority">com.aggarwalankush.interview2go.provider</string>
 
+    <!-- Server stuff -->
     <string name="server_base_url">https://raw.githubusercontent.com/aggarwalankush/CodeBlob/master/src</string>
     <string name="server_output_file">Output.json</string>
 
+    <!-- No data available messages -->
     <string name="empty_topic_list">No Data Available</string>
-    <string name="empty_topic_list_no_network">No Data available. The network is not available to fetch data.</string>
+    <string name="empty_question_list">No Questions Available</string>
+    <string name="empty_list_no_network">No Data available. The network is not available to fetch data.</string>
 </resources>
