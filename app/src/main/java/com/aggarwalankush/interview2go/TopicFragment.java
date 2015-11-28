@@ -2,6 +2,10 @@ package com.aggarwalankush.interview2go;
 
 import android.app.ProgressDialog;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +15,9 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +27,6 @@ import com.aggarwalankush.interview2go.TopicAdapter.TopicAdapterViewHolder;
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 
 public class TopicFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
     public static final String LOG_TAG = TopicFragment.class.getSimpleName();
     public static ProgressDialog progressDialog;
     private TopicAdapter mTopicAdapter;
@@ -65,7 +71,6 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_topic);
-
         // Set the layout manager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         View emptyView = rootView.findViewById(R.id.recyclerview_topic_empty);
@@ -80,10 +85,62 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
         }, emptyView);
 
         mRecyclerView.setAdapter(mTopicAdapter);
-
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
+
+        ItemTouchHelper.SimpleCallback simpleCallback =
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView, ViewHolder viewHolder, ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(ViewHolder viewHolder, int direction) {
+                        int itemPosition = viewHolder.getAdapterPosition();
+                        Log.d(LOG_TAG, "swiped " + direction + " itemPosition " + itemPosition);
+
+
+//                        mTopicAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildDraw(Canvas c, RecyclerView recyclerView, ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                            // Get RecyclerView item from the ViewHolder
+                            View itemView = viewHolder.itemView;
+                            Bitmap icon;
+                            Paint p = new Paint();
+                            if (dX > 0) {
+            /* Set your color for positive displacement */
+                                icon = BitmapFactory.decodeResource(
+                                        getContext().getResources(), R.mipmap.ic_launcher);
+
+                                p.setARGB(255, 255, 0, 0);
+                                // Draw Rect with varying right side, equal to displacement dX
+                                c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
+                                        (float) itemView.getBottom(), p);
+
+                                c.drawBitmap(icon,
+                                        (float) itemView.getLeft()+5,
+                                        (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight())/2,
+                                        p);
+                            } else {
+            /* Set your color for negative displacement */
+                                p.setARGB(255, 0, 255, 0);
+                                // Draw Rect with varying left side, equal to the item's right side plus negative displacement dX
+                                c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
+                                        (float) itemView.getRight(), (float) itemView.getBottom(), p);
+                            }
+
+                            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                        }
+                    }
+                };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         return rootView;
     }
@@ -133,7 +190,6 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
             }
 
             progressDialog.show();
-
 
 
         } else if (progressDialog != null) {

@@ -23,28 +23,6 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicAdapter
         mEmptyView = emptyView;
     }
 
-    public interface TopicAdapterOnClickHandler {
-        void onClick(String topic, TopicAdapterViewHolder vh);
-    }
-
-    public class TopicAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final TextView mTopicView;
-
-        public TopicAdapterViewHolder(View view) {
-            super(view);
-            mTopicView = (TextView) view.findViewById(R.id.tv_topic);
-            view.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            mCursor.moveToPosition(adapterPosition);
-            int topic_index = mCursor.getColumnIndex(InterviewEntry.COLUMN_TOPIC);
-            mClickHandler.onClick(mCursor.getString(topic_index), this);
-        }
-    }
-
 
     @Override
     public TopicAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -79,6 +57,28 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicAdapter
         mCursor = newCursor;
         notifyDataSetChanged();
         mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
+    }
+
+    public interface TopicAdapterOnClickHandler {
+        void onClick(String topic, TopicAdapterViewHolder vh);
+    }
+
+    public class TopicAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public final TextView mTopicView;
+
+        public TopicAdapterViewHolder(View view) {
+            super(view);
+            mTopicView = (TextView) view.findViewById(R.id.tv_topic);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            int topic_index = mCursor.getColumnIndex(InterviewEntry.COLUMN_TOPIC);
+            mClickHandler.onClick(mCursor.getString(topic_index), this);
+        }
     }
 
 }
