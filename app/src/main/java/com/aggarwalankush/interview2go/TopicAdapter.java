@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
@@ -40,10 +41,8 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicAdapter
     public void onBindViewHolder(TopicAdapterViewHolder topicAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
         String topic = mCursor.getString(TopicFragment.COL_TOPIC);
-        if(topic.equalsIgnoreCase("XBonus")) {
-            topic = "Bonus";
-        }
-        topicAdapterViewHolder.mTopicView.setText(topic);
+        topicAdapterViewHolder.mTopicView.setText(Utility.getTopicName(topic));
+        topicAdapterViewHolder.mIconView.setImageResource(Utility.getImageResouce(topic));
     }
 
 
@@ -65,10 +64,12 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicAdapter
 
     public class TopicAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView mTopicView;
+        public final ImageView mIconView;
 
         public TopicAdapterViewHolder(View view) {
             super(view);
             mTopicView = (TextView) view.findViewById(R.id.tv_topic);
+            mIconView = (ImageView) view.findViewById(R.id.list_item_icon);
             view.setOnClickListener(this);
         }
 
