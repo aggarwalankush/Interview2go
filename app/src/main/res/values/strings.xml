@@ -1,19 +1,19 @@
 <resources>
-    <string name="app_name">Interview2go</string>
+    <string name="app_name" translatable="false">Interview2go</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_question">QuestionActivity</string>
     <string name="title_activity_solution">SolutionActivity</string>
 
     <!-- Account type (for sync-adapter authenticator) -->
     <!-- SyncAdapter related -->
-    <string name="sync_account_type">interview2go.aggarwalankush.com</string>
-    <string name="content_authority">com.aggarwalankush.interview2go.provider</string>
+    <string name="sync_account_type" translatable="false">interview2go.aggarwalankush.com</string>
+    <string name="content_authority" translatable="false">com.aggarwalankush.interview2go.provider</string>
 
     <!-- Server stuff -->
-    <string name="server_base_url">https://raw.githubusercontent.com/aggarwalankush/CodeBlob/master/src</string>
-    <string name="server_output_file">Output.json</string>
-    <string name="server_light_solution">LightModeHtml</string>
-    <string name="server_dark_solution">DarkModeHtml</string>
+    <string name="server_base_url" translatable="false">https://raw.githubusercontent.com/aggarwalankush/CodeBlob/master/src</string>
+    <string name="server_output_file" translatable="false">Output.json</string>
+    <string name="server_light_solution" translatable="false">LightModeHtml</string>
+    <string name="server_dark_solution" translatable="false">DarkModeHtml</string>
 
     <!-- No data available messages -->
     <string name="empty_topic_list">No Data Available</string>
@@ -28,4 +28,24 @@
     <string name="progress_message">Requires for offline view</string>
     <string name="progress_title_no_network">No Internet Connection</string>
     <string name="progress_message_no_network">Network is required to download questions</string>
+
+    <!-- Strings related to Dark Mode Enabled preference -->
+    <string name="pref_enable_darkMode_key" translatable="false">enable_darkMode</string>
+    <string name="pref_enable_darkMode_label">Dark Mode</string>
+    <string name="pref_enable_darkMode_true">Enabled</string>
+    <string name="pref_enable_darkMode_false">Not Enabled</string>
+    <string name="pref_enable_darkMode_default" translatable="false">false</string>
+
+    <!-- Strings related to Code Font Size preference -->
+    <string name="pref_font_label">Program Font size</string>
+    <string name="pref_font_label_small">Small</string>
+    <string name="pref_font_label_normal">Normal</string>
+    <string name="pref_font_label_large">Large</string>
+    <string name="pref_font_label_huge">Huge</string>
+    <string name="pref_font_key" translatable="false">font</string>
+    <string name="pref_font_small" translatable="false">small</string>
+    <string name="pref_font_normal" translatable="false">normal</string>
+    <string name="pref_font_large" translatable="false">large</string>
+    <string name="pref_font_huge" translatable="false">huge</string>
+
 </resources>

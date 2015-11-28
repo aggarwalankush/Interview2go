@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="@string/pref_font_normal"
+        android:entries="@array/pref_fonts_options"
+        android:entryValues="@array/pref_fonts_values"
+        android:key="@string/pref_font_key"
+        android:title="@string/pref_font_label" />
+
+    <SwitchPreference
+        android:defaultValue="@string/pref_enable_darkMode_default"
+        android:key="@string/pref_enable_darkMode_key"
+        android:summaryOff="@string/pref_enable_darkMode_false"
+        android:summaryOn="@string/pref_enable_darkMode_true"
+        android:title="@string/pref_enable_darkMode_label"/>
+
+</PreferenceScreen>
