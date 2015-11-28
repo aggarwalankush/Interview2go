@@ -28,6 +28,7 @@ public class InterviewDbHelper extends SQLiteOpenHelper {
                         + InterviewEntry.COLUMN_DARK_SOLUTION + " TEXT NOT NULL, "
                         + InterviewEntry.COLUMN_OUTPUT + " TEXT NOT NULL, "
                         + InterviewEntry.COLUMN_BOOKMARK + " INTEGER DEFAULT 0, "
+                        + InterviewEntry.COLUMN_DONE + " INTEGER DEFAULT 0, "
                         + " UNIQUE ("
                         + InterviewEntry.COLUMN_TOPIC + ", " + InterviewEntry.COLUMN_QUESTION
                         + ") ON CONFLICT REPLACE);";

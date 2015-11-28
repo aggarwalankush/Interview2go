@@ -77,6 +77,8 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                 String solution = "Invalid Solution";
                 String darkSolution = "Invalid Solution";
                 int bookmark = getBookmark(topic, question);
+                int done = getDone(topic, question);
+
 
                 // light solution handling
                 Uri lightSolutionUri = Uri.parse(SERVER_BASE_URL).buildUpon()
@@ -108,6 +110,7 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                 contentValues.put(InterviewEntry.COLUMN_DARK_SOLUTION, darkSolution);
                 contentValues.put(InterviewEntry.COLUMN_OUTPUT, output);
                 contentValues.put(InterviewEntry.COLUMN_BOOKMARK, bookmark);
+                contentValues.put(InterviewEntry.COLUMN_DONE, done);
                 cVVector.add(contentValues);
 
                 // update progress bar
@@ -179,13 +182,32 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
         return bookmark;
     }
 
+    public int getDone(String topic, String question) {
+        int done = 0;
+        if (!isEmptyDB()) {
+            Cursor cursor = getContext().getContentResolver().query(
+                    InterviewEntry.buildTopicWithQuestion(topic, question),
+                    new String[]{InterviewEntry.COLUMN_DONE},
+                    null,
+                    null,
+                    null
+            );
+            if ((cursor != null) && (cursor.getCount() > 0)) {
+                cursor.moveToFirst();
+                done = cursor.getInt(0);
+                cursor.close();
+            }
+        }
+        return done;
+    }
+
     public boolean isEmptyDB() {
         if (emptyDB) {
             return true;
         }
         Cursor cursor = getContext().getContentResolver().query(
                 InterviewEntry.CONTENT_URI,
-                new String[]{InterviewEntry.COLUMN_BOOKMARK},
+                new String[]{InterviewEntry._ID},
                 null,
                 null,
                 null);
