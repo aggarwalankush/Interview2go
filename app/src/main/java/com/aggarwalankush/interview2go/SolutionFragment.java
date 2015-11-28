@@ -1,16 +1,16 @@
 package com.aggarwalankush.interview2go;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -93,10 +93,8 @@ public class SolutionFragment extends Fragment implements LoaderManager.LoaderCa
         menuItem.setIntent(createShareForecastIntent());
     }
 
-    @TargetApi(VERSION_CODES.LOLLIPOP)
     private Intent createShareForecastIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, mShareString + "\n" + SHARE_HASHTAG);
         return shareIntent;
@@ -128,11 +126,13 @@ public class SolutionFragment extends Fragment implements LoaderManager.LoaderCa
         if (cursor != null && cursor.moveToFirst()) {
 
             String solution = cursor.getString(COL_SOLUTION);
+            solution = solution.replace("XBonus", "Bonus");
+            Spanned spanned = Html.fromHtml(solution);
             String output = cursor.getString(COL_OUTPUT);
 
             switch (mSectionName) {
                 case SOLUTION:
-                    mSectionView.setText(solution);
+                    mSectionView.setText(spanned);
                     break;
                 case OUTPUT:
                     mSectionView.setText(output);
@@ -142,11 +142,12 @@ public class SolutionFragment extends Fragment implements LoaderManager.LoaderCa
             }
 
             String topic = InterviewEntry.getTopicFromUri(mUri);
+            topic = topic.replace("XBonus", "Bonus");
             String question = InterviewEntry.getQuestionFromUri(mUri);
 
             mShareString =
                     String.format(getContext().getString(R.string.share_format),
-                            topic, question, solution, output);
+                            topic, question, spanned, output);
 
             // reset the menu in case it was created before data loading
             Toolbar toolbar = (Toolbar) this.getActivity().findViewById(R.id.toolbar);

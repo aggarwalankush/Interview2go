@@ -62,6 +62,9 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicAdapter
     public void onBindViewHolder(TopicAdapterViewHolder topicAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
         String topic = mCursor.getString(TopicFragment.COL_TOPIC);
+        if(topic.equalsIgnoreCase("XBonus")) {
+            topic = "Bonus";
+        }
         topicAdapterViewHolder.mTopicView.setText(topic);
     }
 

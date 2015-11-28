@@ -18,7 +18,9 @@ public class InterviewContract {
         public static final String COLUMN_TOPIC = "topic";
         public static final String COLUMN_QUESTION = "question";
         public static final String COLUMN_SOLUTION = "solution";
+        public static final String COLUMN_DARK_SOLUTION = "dark_solution";
         public static final String COLUMN_OUTPUT = "output";
+        public static final String COLUMN_BOOKMARK = "bookmark";
 
 
         public static final Uri CONTENT_URI =

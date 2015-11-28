@@ -10,12 +10,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncRequest;
 import android.content.SyncResult;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.aggarwalankush.interview2go.R;
+import com.aggarwalankush.interview2go.TopicFragment;
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -41,6 +43,9 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int SYNC_INTERVAL = 5 * 24 * 60 * 60;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
 
+    boolean flag = true;
+    boolean saveBookMarks = false;
+
     public InterviewSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
     }
@@ -48,7 +53,14 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        Log.d(LOG_TAG, "onPerformSync Called.");
+//        Log.d(LOG_TAG, "onPerformSync Called.");
+
+        Cursor checkEmptyDB = getContext().getContentResolver().query(InterviewEntry.CONTENT_URI, new String[]{InterviewEntry.COLUMN_BOOKMARK}, null, null, null);
+
+        if ((checkEmptyDB != null) && (checkEmptyDB.getCount() > 0)) {
+            saveBookMarks = true;
+            checkEmptyDB.close();
+        }
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -62,7 +74,6 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
             Uri builtUri = Uri.parse(SERVER_BASE_URL).buildUpon().appendPath(server_output_file).build();
             URL url = new URL(builtUri.toString());
 
-            // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
@@ -124,17 +135,19 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
             for (Entry<String, String> quesToOutputEntry : quesToOutput.entrySet()) {
                 String question = quesToOutputEntry.getKey();
                 String output = quesToOutputEntry.getValue();
+                String solution = "Invalid Solution";
+                String darkSolution = "Invalid Solution";
+                int bookmark = 0;
                 try {
                     final String SERVER_BASE_URL = getContext().getString(R.string.server_base_url);
-                    Uri builtUri = Uri.parse(SERVER_BASE_URL).buildUpon().appendPath(topic).appendPath(question + ".java").build();
+                    String server_light_solution = getContext().getString(R.string.server_light_solution);
+                    Uri builtUri = Uri.parse(SERVER_BASE_URL).buildUpon().appendPath(server_light_solution).appendPath(topic).appendPath(question).build();
                     URL url = new URL(builtUri.toString());
 
-                    // Create the request to OpenWeatherMap, and open the connection
                     urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setRequestMethod("GET");
                     urlConnection.connect();
 
-                    // Read the input stream into a String
                     InputStream inputStream = urlConnection.getInputStream();
                     StringBuilder builder = new StringBuilder();
                     if (inputStream == null) {
@@ -144,22 +157,12 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         builder.append(line);
-                        builder.append("\n");
                     }
 
                     if (builder.length() == 0) {
                         return;
                     }
-
-                    String solution = builder.toString();
-
-                    ContentValues contentValues = new ContentValues();
-                    contentValues.put(InterviewEntry.COLUMN_TOPIC, topic);
-                    contentValues.put(InterviewEntry.COLUMN_QUESTION, question);
-                    contentValues.put(InterviewEntry.COLUMN_SOLUTION, solution);
-                    contentValues.put(InterviewEntry.COLUMN_OUTPUT, output);
-
-                    cVVector.add(contentValues);
+                    solution = builder.toString();
 
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "IO Error ", e);
@@ -175,6 +178,91 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                         }
                     }
                 }
+
+                try {
+                    final String SERVER_BASE_URL = getContext().getString(R.string.server_base_url);
+                    String server_dark_solution = getContext().getString(R.string.server_dark_solution);
+                    Uri builtUri = Uri.parse(SERVER_BASE_URL).buildUpon().appendPath(server_dark_solution).appendPath(topic).appendPath(question).build();
+                    URL url = new URL(builtUri.toString());
+
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.connect();
+
+                    InputStream inputStream = urlConnection.getInputStream();
+                    StringBuilder builder = new StringBuilder();
+                    if (inputStream == null) {
+                        return;
+                    }
+                    reader = new BufferedReader(new InputStreamReader(inputStream));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        builder.append(line);
+                    }
+
+                    if (builder.length() == 0) {
+                        return;
+                    }
+                    darkSolution = builder.toString();
+
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "IO Error ", e);
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (final IOException e) {
+                            Log.e(LOG_TAG, "Error closing stream", e);
+                        }
+                    }
+                }
+
+                if (saveBookMarks) {
+                    Cursor cursor = getContext().getContentResolver().query(
+                            InterviewEntry.buildTopicWithQuestion(topic, question),
+                            new String[]{InterviewEntry.COLUMN_BOOKMARK},
+                            null,
+                            null,
+                            null
+                    );
+                    if ((cursor != null) && (cursor.getCount() > 0)) {
+                        cursor.moveToFirst();
+                        bookmark = cursor.getInt(0);
+//                        Log.d(LOG_TAG, "bookmark is " + bookmark);
+                        cursor.close();
+                    }
+
+                } else {
+                    if (TopicFragment.handler != null && TopicFragment.progressDialog != null) {
+                        TopicFragment.handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                TopicFragment.progressDialog.incrementProgressBy(1);
+                                if (flag) {
+                                    TopicFragment.progressDialog.setTitle(getContext().getString(R.string.progress_title));
+                                    TopicFragment.progressDialog.setMessage(getContext().getString(R.string.progress_message));
+                                    flag = false;
+                                }
+                            }
+                        });
+                    }
+                }
+
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(InterviewEntry.COLUMN_TOPIC, topic);
+                contentValues.put(InterviewEntry.COLUMN_QUESTION, question);
+                contentValues.put(InterviewEntry.COLUMN_SOLUTION, solution);
+                contentValues.put(InterviewEntry.COLUMN_DARK_SOLUTION, darkSolution);
+                contentValues.put(InterviewEntry.COLUMN_OUTPUT, output);
+                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, bookmark);
+
+                cVVector.add(contentValues);
+
+
             }
         }
 
@@ -184,17 +272,16 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
             getContext().getContentResolver().bulkInsert(InterviewEntry.CONTENT_URI, cvArray);
         }
 
-        Log.d(LOG_TAG, "Interview Sync Complete. " + cVVector.size() + " Inserted");
+//        Log.d(LOG_TAG, "Interview Sync Complete. " + cVVector.size() + " Inserted");
     }
 
-
-    public static void syncImmediately(Context context) {
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        ContentResolver.requestSync(getSyncAccount(context),
-                context.getString(R.string.content_authority), bundle);
-    }
+//    public static void syncImmediately(Context context) {
+//        Bundle bundle = new Bundle();
+//        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+//        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+//        ContentResolver.requestSync(getSyncAccount(context),
+//                context.getString(R.string.content_authority), bundle);
+//    }
 
     public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
         Account account = getSyncAccount(context);
@@ -231,12 +318,11 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
     private static void onAccountCreated(Account newAccount, Context context) {
         InterviewSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
         ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
-        syncImmediately(context);
+//        syncImmediately(context);
     }
 
     public static void initializeSyncAdapter(Context context) {
         getSyncAccount(context);
     }
-
 
 }

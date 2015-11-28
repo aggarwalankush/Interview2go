@@ -12,6 +12,8 @@
     <!-- Server stuff -->
     <string name="server_base_url">https://raw.githubusercontent.com/aggarwalankush/CodeBlob/master/src</string>
     <string name="server_output_file">Output.json</string>
+    <string name="server_light_solution">LightModeHtml</string>
+    <string name="server_dark_solution">DarkModeHtml</string>
 
     <!-- No data available messages -->
     <string name="empty_topic_list">No Data Available</string>
@@ -20,4 +22,10 @@
     <string name="empty_list_no_network">No Data available. The network is not available to fetch data.</string>
     <string name="action_share">Share</string>
     <string name="share_format" translatable="false">Topic : %1$s %nQuestion : %2$s %n---Solution--- %n%3$s %n---Output--- %n%4$s</string>
+
+    <!-- Topic Progress bar -->
+    <string name="progress_title">Downloading questions</string>
+    <string name="progress_message">Requires for offline view</string>
+    <string name="progress_title_no_network">No Internet Connection</string>
+    <string name="progress_message_no_network">Network is required to download questions</string>
 </resources>
