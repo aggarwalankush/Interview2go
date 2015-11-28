@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="doneColor">#0F9D58</color>
+    <color name="bookmarkColor">#EF6C00</color>
 
 
 
@@ -19,5 +21,7 @@
     <color name="primary_dark">#0288D1</color>
     <!-- 100 -->
     <color name="primary_light">#B3E5FC</color>
+
+
 
 </resources>

@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -101,6 +103,14 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                         int itemPosition = viewHolder.getAdapterPosition();
                         Log.d(LOG_TAG, "swiped " + direction + " itemPosition " + itemPosition);
 
+                        switch (direction) {
+                            case ItemTouchHelper.LEFT:
+                                // bookmark item
+                                break;
+                            case ItemTouchHelper.RIGHT:
+                                // done item
+                                break;
+                        }
 
 //                        mTopicAdapter.notifyDataSetChanged();
                     }
@@ -108,34 +118,42 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                     @Override
                     public void onChildDraw(Canvas c, RecyclerView recyclerView, ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                            // Get RecyclerView item from the ViewHolder
                             View itemView = viewHolder.itemView;
                             Bitmap icon;
-                            Paint p = new Paint();
+                            Paint paint = new Paint();
+                            int iconSize = (int) (Math.abs(dX) / 2);
+                            iconSize = Math.min(iconSize, 100);
                             if (dX > 0) {
-            /* Set your color for positive displacement */
                                 icon = BitmapFactory.decodeResource(
-                                        getContext().getResources(), R.mipmap.ic_launcher);
+                                        getContext().getResources(), R.drawable.ic_done);
+                                icon = Bitmap.createScaledBitmap(icon, iconSize > 0 ? iconSize : 1, iconSize > 0 ? iconSize : 1, false);
+                                paint.setColor(ContextCompat.getColor(getContext(), R.color.doneColor));
 
-                                p.setARGB(255, 255, 0, 0);
-                                // Draw Rect with varying right side, equal to displacement dX
                                 c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
-                                        (float) itemView.getBottom(), p);
-
+                                        (float) itemView.getBottom(), paint);
                                 c.drawBitmap(icon,
-                                        (float) itemView.getLeft()+5,
-                                        (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight())/2,
-                                        p);
+                                        (float) itemView.getLeft() + dpToPx(16),
+                                        (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight()) / 2,
+                                        paint);
                             } else {
-            /* Set your color for negative displacement */
-                                p.setARGB(255, 0, 255, 0);
-                                // Draw Rect with varying left side, equal to the item's right side plus negative displacement dX
-                                c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
-                                        (float) itemView.getRight(), (float) itemView.getBottom(), p);
-                            }
+                                icon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_bookmark);
+                                icon = Bitmap.createScaledBitmap(icon, iconSize > 0 ? iconSize : 1, iconSize > 0 ? iconSize : 1, false);
+                                paint.setColor(ContextCompat.getColor(getContext(), R.color.bookmarkColor));
 
+                                c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
+                                        (float) itemView.getRight(), (float) itemView.getBottom(), paint);
+                                c.drawBitmap(icon,
+                                        (float) itemView.getRight() - dpToPx(16) - icon.getWidth(),
+                                        (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight()) / 2,
+                                        paint);
+                            }
                             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                         }
+                    }
+
+                    public int dpToPx(int dp) {
+                        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+                        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
                     }
                 };
 
