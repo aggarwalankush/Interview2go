@@ -1,6 +1,7 @@
 package com.aggarwalankush.interview2go;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +24,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -56,6 +59,16 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
     //done = ?
     private static final String sDoneSelection = InterviewEntry.COLUMN_DONE + " = ? ";
 
+    //bookmark = ?
+    private static final String sBookmarkSelection = InterviewEntry.COLUMN_BOOKMARK + " = ? ";
+
+    //topic = ?
+    private static final String sTopicSelection = InterviewEntry.COLUMN_TOPIC + " = ? ";
+
+    //done = ? AND bookmark = ?
+    private static final String sDoneAndBookmark =
+            InterviewEntry.COLUMN_DONE + " = ? AND " + InterviewEntry.COLUMN_BOOKMARK + " = ? ";
+
     public interface Callback {
         void onItemSelected(Uri topicUri);
     }
@@ -79,7 +92,7 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_topic);
         // Set the layout manager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -111,16 +124,79 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                         int itemPosition = viewHolder.getAdapterPosition();
                         Log.d(LOG_TAG, "swiped " + direction + " itemPosition " + itemPosition);
 
-                        switch (direction) {
-                            case ItemTouchHelper.LEFT:
-                                // bookmark item
-                                break;
-                            case ItemTouchHelper.RIGHT:
-                                // done item
-                                break;
+                        String topic = "invalid topic";
+                        if (viewHolder instanceof TopicAdapterViewHolder) {
+                            TextView topicView = ((TopicAdapterViewHolder) viewHolder).mTopicView;
+                            topic = Utility.getDatabaseTopicName(topicView.getText().toString());
                         }
 
-//                        mTopicAdapter.notifyDataSetChanged();
+                        switch (direction) {
+                            case ItemTouchHelper.LEFT: {
+                                // bookmark item
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, 1);
+                                getContext().getContentResolver().update(
+                                        InterviewEntry.CONTENT_URI,
+                                        contentValues,
+                                        sTopicSelection,
+                                        new String[]{topic}
+                                );
+                                mTopicAdapter.notifyItemRemoved(itemPosition);
+
+                                final String finalTopic = topic;
+                                Snackbar.make(rootView, "BookMarked", Snackbar.LENGTH_LONG)
+                                        .setAction("Undo", new OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                ContentValues contentValues = new ContentValues();
+                                                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, 0);
+                                                int rowUpdated = getContext().getContentResolver().update(
+                                                        InterviewEntry.CONTENT_URI,
+                                                        contentValues,
+                                                        sTopicSelection,
+                                                        new String[]{finalTopic}
+                                                );
+                                                Log.d(LOG_TAG, "rows updated " + rowUpdated);
+                                                mTopicAdapter.notifyDataSetChanged();
+                                            }
+                                        }).show();
+                                break;
+                            }
+                            case ItemTouchHelper.RIGHT: {
+                                // done item
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put(InterviewEntry.COLUMN_DONE, 1);
+                                getContext().getContentResolver().update(
+                                        InterviewEntry.CONTENT_URI,
+                                        contentValues,
+                                        sTopicSelection,
+                                        new String[]{topic}
+                                );
+                                mTopicAdapter.notifyItemRemoved(itemPosition);
+
+                                final String finalTopic = topic;
+                                Snackbar.make(rootView, "Marked Done", Snackbar.LENGTH_LONG)
+                                        .setAction("Undo", new OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                ContentValues contentValues = new ContentValues();
+                                                contentValues.put(InterviewEntry.COLUMN_DONE, 0);
+                                                int rowUpdated = getContext().getContentResolver().update(
+                                                        InterviewEntry.CONTENT_URI,
+                                                        contentValues,
+                                                        sTopicSelection,
+                                                        new String[]{finalTopic}
+                                                );
+                                                Log.d(LOG_TAG, "rows updated " + rowUpdated);
+                                                mTopicAdapter.notifyDataSetChanged();
+                                            }
+                                        }).show();
+
+                                break;
+                            }
+                        }
+
+
                     }
 
                     @Override
@@ -180,14 +256,33 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
         super.onSaveInstanceState(outState);
     }
 
-    public static HashMap<String, Integer> topicToDoneQues = new HashMap<>();
-    public static HashMap<String, Integer> topicToTotalQues = new HashMap<>();
+    public static HashMap<String, Integer> topicToDoneQues;
+    public static HashMap<String, Integer> topicToBookmarkQues;
+    public static HashMap<String, Integer> topicToTotalQues;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Sort order:  Ascending, by topic name.
         String sortOrder = InterviewEntry.COLUMN_TOPIC + " ASC";
 
+        Log.d(LOG_TAG, "oncreateloader");
+
+        return new CursorLoader(
+                getActivity(),
+                InterviewEntry.CONTENT_URI,
+                TOPIC_COLUMNS,
+                sDoneAndBookmark,
+                new String[]{"0","0"},
+                sortOrder);
+    }
+
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor newData) {
+        topicToDoneQues = new HashMap<>();
+        topicToBookmarkQues = new HashMap<>();
+        topicToTotalQues = new HashMap<>();
+        Log.d(LOG_TAG, "onloadfinished");
         Cursor cursor = getContext().getContentResolver().query(
                 InterviewEntry.CONTENT_URI,
                 TOPIC_COLUMNS,
@@ -198,6 +293,20 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
         if (null != cursor) {
             while (cursor.moveToNext()) {
                 topicToDoneQues.put(cursor.getString(COL_TOPIC), cursor.getInt(COL_TOTAL));
+            }
+            cursor.close();
+        }
+
+        cursor = getContext().getContentResolver().query(
+                InterviewEntry.CONTENT_URI,
+                TOPIC_COLUMNS,
+                sBookmarkSelection,
+                new String[]{"1"},
+                null);
+
+        if (null != cursor) {
+            while (cursor.moveToNext()) {
+                topicToBookmarkQues.put(cursor.getString(COL_TOPIC), cursor.getInt(COL_TOTAL));
             }
             cursor.close();
         }
@@ -216,19 +325,7 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
             cursor.close();
         }
 
-        return new CursorLoader(
-                getActivity(),
-                InterviewEntry.CONTENT_URI,
-                TOPIC_COLUMNS,
-                sDoneSelection,
-                new String[]{"0"},
-                sortOrder);
-    }
-
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mTopicAdapter.swapCursor(cursor);
+        mTopicAdapter.swapCursor(newData);
         if (mPosition != RecyclerView.NO_POSITION) {
             mRecyclerView.smoothScrollToPosition(mPosition);
         }
@@ -237,10 +334,10 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
 
     private void updateEmptyView() {
         if (mTopicAdapter.getItemCount() == 0) {
-            if (topicToTotalQues.equals(topicToTotalQues)) {
+            if (!topicToTotalQues.isEmpty() && topicToTotalQues.equals(topicToDoneQues)) {
                 TextView tv = (TextView) getView().findViewById(R.id.recyclerview_topic_empty);
                 if (null != tv) {
-                    tv.setText("Done with all questions");
+                    tv.setText("All questions done or bookmarked");
                 }
             } else {
                 if (!Utility.isNetworkAvailable(getActivity())) {
@@ -265,6 +362,7 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        Log.d(LOG_TAG, "onloaderReset");
         mTopicAdapter.swapCursor(null);
     }
 

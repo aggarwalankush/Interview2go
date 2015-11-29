@@ -50,9 +50,13 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicAdapter
             done = 0;
         }
 
-        topicAdapterViewHolder.mTopicView.setText(Utility.getTopicName(topic));
+        Integer bookmarks = TopicFragment.topicToBookmarkQues.get(topic);
+        if (null == bookmarks) {
+            bookmarks = 0;
+        }
+        topicAdapterViewHolder.mTopicView.setText(Utility.getDisplayTopicName(topic));
         topicAdapterViewHolder.mIconView.setImageResource(Utility.getImageResouce(topic));
-        String detailString = String.format(mContext.getString(R.string.share_topic_detail), total, done);
+        String detailString = String.format(mContext.getString(R.string.share_topic_detail), total, done,bookmarks);
         topicAdapterViewHolder.mTopicDetailView.setText(detailString);
     }
 

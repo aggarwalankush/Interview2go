@@ -104,7 +104,7 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 // adding values to content values
                 ContentValues contentValues = new ContentValues();
-                contentValues.put(InterviewEntry.COLUMN_TOPIC, topic);
+                contentValues.put(InterviewEntry.COLUMN_TOPIC, topic.toLowerCase());
                 contentValues.put(InterviewEntry.COLUMN_QUESTION, question);
                 contentValues.put(InterviewEntry.COLUMN_SOLUTION, solution);
                 contentValues.put(InterviewEntry.COLUMN_DARK_SOLUTION, darkSolution);

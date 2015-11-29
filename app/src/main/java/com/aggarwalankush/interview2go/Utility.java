@@ -41,8 +41,8 @@ public class Utility {
         return R.drawable.ic_default;
     }
 
-    public static String getTopicName(String topic) {
-        switch (topic.toLowerCase()) {
+    public static String getDisplayTopicName(String topic) {
+        switch (topic) {
             case "arrays":
                 return "Arrays";
             case "bitwiseandmath":
@@ -63,6 +63,32 @@ public class Utility {
                 return "Trees";
             case "xbonus":
                 return "Bonus Questions";
+        }
+        return "Random";
+    }
+
+    public static String getDatabaseTopicName(String topic) {
+        switch (topic) {
+            case "Arrays":
+                return "arrays";
+            case "Bitwise and Maths":
+                return "bitwiseandmath";
+            case "Graphs":
+                return "graphs";
+            case "Linked Lists":
+                return "linkedlists";
+            case "Recursion and Dynamic Programming":
+                return "recursiondp";
+            case "Sorting":
+                return "sorting";
+            case "Stacks and Queues":
+                return "stacksqueues";
+            case "Strings":
+                return "strings";
+            case "Trees":
+                return "trees";
+            case "Bonus Questions":
+                return "xbonus";
         }
         return "Random";
     }

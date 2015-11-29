@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Interview2go</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_reset">Reset</string>
     <string name="title_activity_question">QuestionActivity</string>
     <string name="title_activity_solution">SolutionActivity</string>
 
@@ -26,7 +26,7 @@
     <string name="share_format" translatable="false">Topic : %1$s %nQuestion : %2$s %n---Solution--- %n%3$s %n---Output--- %n%4$s</string>
 
     <!-- Topic detail -->
-    <string name="share_topic_detail" translatable="false">%1$d Questions, %2$d Done</string>
+    <string name="share_topic_detail" translatable="false">%1$d Questions, %2$d Done, %3$d Bookmarks</string>
 
     <!-- Topic Progress bar -->
     <string name="progress_title">Downloading questions</string>

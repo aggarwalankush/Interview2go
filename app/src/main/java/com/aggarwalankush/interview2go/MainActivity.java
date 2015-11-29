@@ -1,5 +1,6 @@
 package com.aggarwalankush.interview2go;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 import com.aggarwalankush.interview2go.sync.InterviewSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements TopicFragment.Callback {
@@ -44,7 +46,18 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_reset) {
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(InterviewEntry.COLUMN_DONE, 0);
+            contentValues.put(InterviewEntry.COLUMN_BOOKMARK, 0);
+            this.getContentResolver().update(
+                    InterviewEntry.CONTENT_URI,
+                    contentValues,
+                    null,
+                    null
+            );
+
             return true;
         }
         return super.onOptionsItemSelected(item);
