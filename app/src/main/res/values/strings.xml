@@ -20,8 +20,13 @@
     <string name="empty_question_list">No Questions Available</string>
     <string name="empty_section">No Data Available</string>
     <string name="empty_list_no_network">No Data available. The network is not available to fetch data.</string>
+
+    <!-- Share data -->
     <string name="action_share">Share</string>
     <string name="share_format" translatable="false">Topic : %1$s %nQuestion : %2$s %n---Solution--- %n%3$s %n---Output--- %n%4$s</string>
+
+    <!-- Topic detail -->
+    <string name="share_topic_detail" translatable="false">%1$d Questions, %2$d Done</string>
 
     <!-- Topic Progress bar -->
     <string name="progress_title">Downloading questions</string>
@@ -47,5 +52,6 @@
     <string name="pref_font_normal" translatable="false">normal</string>
     <string name="pref_font_large" translatable="false">large</string>
     <string name="pref_font_huge" translatable="false">huge</string>
+    <string name="forward_content_desc">forward icon</string>
 
 </resources>

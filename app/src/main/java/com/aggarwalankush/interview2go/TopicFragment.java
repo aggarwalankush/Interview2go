@@ -28,6 +28,8 @@ import com.aggarwalankush.interview2go.TopicAdapter.TopicAdapterOnClickHandler;
 import com.aggarwalankush.interview2go.TopicAdapter.TopicAdapterViewHolder;
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 
+import java.util.HashMap;
+
 public class TopicFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = TopicFragment.class.getSimpleName();
     public static ProgressDialog progressDialog;
@@ -43,10 +45,15 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
 
     private static final String[] TOPIC_COLUMNS = {
             InterviewEntry._ID,
-            InterviewEntry.COLUMN_TOPIC
+            InterviewEntry.COLUMN_TOPIC,
+            "count(" + InterviewEntry.COLUMN_TOPIC + ") AS total"
     };
     static final int COL_ID = 0;
     static final int COL_TOPIC = 1;
+    static final int COL_TOTAL = 2;
+
+    //done = ?
+    private static final String sDoneSelection = InterviewEntry.COLUMN_DONE + " = ? ";
 
     public interface Callback {
         void onItemSelected(Uri topicUri);
@@ -172,11 +179,26 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
         super.onSaveInstanceState(outState);
     }
 
+    public static HashMap<String, Integer> topicToDoneQues = new HashMap<>();
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Sort order:  Ascending, by topic name.
         String sortOrder = InterviewEntry.COLUMN_TOPIC + " ASC";
+
+        Cursor cursor = getContext().getContentResolver().query(
+                InterviewEntry.CONTENT_URI,
+                TOPIC_COLUMNS,
+                sDoneSelection,
+                new String[]{"1"},
+                null);
+
+        if (null != cursor) {
+            while (cursor.moveToNext()) {
+                topicToDoneQues.put(cursor.getString(COL_TOPIC), cursor.getInt(COL_TOTAL));
+            }
+        }
+
         return new CursorLoader(
                 getActivity(),
                 InterviewEntry.CONTENT_URI,
