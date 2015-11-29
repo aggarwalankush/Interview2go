@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aggarwalankush.interview2go.QuestionAdapter.QuestionAdapterViewHolder;
@@ -24,29 +25,6 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHol
         mEmptyView = emptyView;
     }
 
-    public interface QuestionAdapterOnClickHandler {
-        void onClick(String question, QuestionAdapterViewHolder vh);
-    }
-
-    public class QuestionAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final TextView mQuestionView;
-
-        public QuestionAdapterViewHolder(View view) {
-            super(view);
-            mQuestionView = (TextView) view.findViewById(R.id.tv_question);
-            view.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            mCursor.moveToPosition(adapterPosition);
-            int question_index = mCursor.getColumnIndex(InterviewEntry.COLUMN_QUESTION);
-            mClickHandler.onClick(mCursor.getString(question_index), this);
-        }
-    }
-
-
     @Override
     public QuestionAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         if (viewGroup instanceof RecyclerView) {
@@ -64,6 +42,9 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHol
         mCursor.moveToPosition(position);
         String question = mCursor.getString(QuestionActivityFragment.COL_QUESTION);
         questionAdapterViewHolder.mQuestionView.setText(question);
+        String topic = mCursor.getString(QuestionActivityFragment.COL_TOPIC);
+        questionAdapterViewHolder.mQuestionDetailView.setText(Utility.getDisplayTopicName(topic));
+        questionAdapterViewHolder.mIconView.setImageResource(Utility.getImageResouce(topic));
     }
 
 
@@ -78,5 +59,33 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHol
         notifyDataSetChanged();
         mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
+
+
+    public interface QuestionAdapterOnClickHandler {
+        void onClick(String question, QuestionAdapterViewHolder vh);
+    }
+
+    public class QuestionAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public final TextView mQuestionView;
+        public final ImageView mIconView;
+        public final TextView mQuestionDetailView;
+
+        public QuestionAdapterViewHolder(View view) {
+            super(view);
+            mIconView = (ImageView) view.findViewById(R.id.list_item_icon);
+            mQuestionView = (TextView) view.findViewById(R.id.tv_question);
+            mQuestionDetailView = (TextView) view.findViewById(R.id.tv_question_detail);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            int question_index = mCursor.getColumnIndex(InterviewEntry.COLUMN_QUESTION);
+            mClickHandler.onClick(mCursor.getString(question_index), this);
+        }
+    }
+
 
 }

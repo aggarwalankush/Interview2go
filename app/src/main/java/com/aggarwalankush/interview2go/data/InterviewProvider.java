@@ -12,6 +12,10 @@ import android.support.annotation.NonNull;
 
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class InterviewProvider extends ContentProvider {
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -75,10 +79,27 @@ public class InterviewProvider extends ContentProvider {
             case INTERVIEW_WITH_TOPIC_AND_QUESTION: {
                 String topic = InterviewEntry.getTopicFromUri(uri);
                 String question = InterviewEntry.getQuestionFromUri(uri);
+
+                if (null != selection) {
+                    selection += " AND " + sTopicAndQuestionSelection;
+                } else {
+                    selection = sTopicAndQuestionSelection;
+                }
+
+                if (null != selectionArgs) {
+                    int len = selectionArgs.length;
+                    List<String> list = new ArrayList<>(Arrays.asList(selectionArgs));
+                    list.add(topic);
+                    list.add(question);
+                    selectionArgs = list.toArray(new String[len+1]);
+                } else {
+                    selectionArgs = new String[]{topic,question};
+                }
+
                 retCursor = sQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                         projection,
-                        sTopicAndQuestionSelection,
-                        new String[]{topic, question},
+                        selection,
+                        selectionArgs,
                         null,
                         null,
                         sortOrder
@@ -88,10 +109,25 @@ public class InterviewProvider extends ContentProvider {
             // "interview/*"
             case INTERVIEW_WITH_TOPIC: {
                 String topic = InterviewEntry.getTopicFromUri(uri);
+                if (null != selection) {
+                    selection += " AND " + sTopicSelection;
+                } else {
+                    selection = sTopicSelection;
+                }
+
+                if (null != selectionArgs) {
+                    int len = selectionArgs.length;
+                    List<String> list = new ArrayList<>(Arrays.asList(selectionArgs));
+                    list.add(topic);
+                    selectionArgs = list.toArray(new String[len+1]);
+                } else {
+                    selectionArgs = new String[]{topic};
+                }
+
                 retCursor = sQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                         projection,
-                        sTopicSelection,
-                        new String[]{topic},
+                        selection,
+                        selectionArgs,
                         null,
                         null,
                         sortOrder

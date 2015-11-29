@@ -1,16 +1,28 @@
 package com.aggarwalankush.interview2go;
 
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -36,12 +48,21 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
 
     private static final String[] QUESTION_COLUMNS = {
             InterviewEntry._ID,
+            InterviewEntry.COLUMN_TOPIC,
             InterviewEntry.COLUMN_QUESTION
     };
 
     public static final int COL_ID = 0;
-    public static final int COL_QUESTION = 1;
+    public static final int COL_TOPIC = 1;
+    public static final int COL_QUESTION = 2;
 
+    //topic = ? AND question = ?
+    private static final String sTopicAndQuestion =
+            InterviewEntry.COLUMN_TOPIC + " = ? AND " + InterviewEntry.COLUMN_QUESTION + " = ? ";
+
+    //done = ? AND bookmark = ?
+    private static final String sDoneAndBookmark =
+            InterviewEntry.COLUMN_DONE + " = ? AND " + InterviewEntry.COLUMN_BOOKMARK + " = ? ";
 
     public interface Callback {
         void onItemSelected(Uri questionUri);
@@ -71,7 +92,7 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
             }
         }
 
-        View rootView = inflater.inflate(R.layout.fragment_question, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_question, container, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_question);
 
         // Set the layout manager
@@ -89,11 +110,148 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
         }, emptyView);
 
         mRecyclerView.setAdapter(mQuestionAdapter);
-
-
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
+
+
+        ItemTouchHelper.SimpleCallback simpleCallback =
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView, ViewHolder viewHolder, ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(ViewHolder viewHolder, int direction) {
+                        int itemPosition = viewHolder.getAdapterPosition();
+
+                        String topic = "invalid topic";
+                        String question = "invalid quesion";
+                        if (viewHolder instanceof QuestionAdapterViewHolder) {
+                            TextView questionView = ((QuestionAdapterViewHolder) viewHolder).mQuestionView;
+                            question = questionView.getText().toString();
+                            TextView topicView = ((QuestionAdapterViewHolder) viewHolder).mQuestionDetailView;
+                            topic = Utility.getDatabaseTopicName(topicView.getText().toString());
+                        }
+
+                        switch (direction) {
+                            case ItemTouchHelper.LEFT: {
+                                // bookmark item
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, 1);
+                                getContext().getContentResolver().update(
+                                        InterviewEntry.CONTENT_URI,
+                                        contentValues,
+                                        sTopicAndQuestion,
+                                        new String[]{topic, question}
+                                );
+                                mQuestionAdapter.notifyItemRemoved(itemPosition);
+
+                                final String finalTopic = topic;
+                                final String finalQuestion = question;
+                                Snackbar.make(rootView, "BookMarked", Snackbar.LENGTH_LONG)
+                                        .setAction("Undo", new OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                ContentValues contentValues = new ContentValues();
+                                                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, 0);
+                                                int rowUpdated = getContext().getContentResolver().update(
+                                                        InterviewEntry.CONTENT_URI,
+                                                        contentValues,
+                                                        sTopicAndQuestion,
+                                                        new String[]{finalTopic, finalQuestion}
+                                                );
+                                                Log.d(LOG_TAG, "rows updated " + rowUpdated);
+                                                mQuestionAdapter.notifyDataSetChanged();
+                                            }
+                                        }).show();
+                                break;
+                            }
+                            case ItemTouchHelper.RIGHT: {
+                                // done item
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put(InterviewEntry.COLUMN_DONE, 1);
+                                getContext().getContentResolver().update(
+                                        InterviewEntry.CONTENT_URI,
+                                        contentValues,
+                                        sTopicAndQuestion,
+                                        new String[]{topic, question}
+                                );
+                                mQuestionAdapter.notifyItemRemoved(itemPosition);
+
+                                final String finalTopic = topic;
+                                final String finalQuestion = question;
+                                Snackbar.make(rootView, "Marked Done", Snackbar.LENGTH_LONG)
+                                        .setAction("Undo", new OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                ContentValues contentValues = new ContentValues();
+                                                contentValues.put(InterviewEntry.COLUMN_DONE, 0);
+                                                int rowUpdated = getContext().getContentResolver().update(
+                                                        InterviewEntry.CONTENT_URI,
+                                                        contentValues,
+                                                        sTopicAndQuestion,
+                                                        new String[]{finalTopic, finalQuestion}
+                                                );
+                                                Log.d(LOG_TAG, "rows updated " + rowUpdated);
+                                                mQuestionAdapter.notifyDataSetChanged();
+                                            }
+                                        }).show();
+
+                                break;
+                            }
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onChildDraw(Canvas c, RecyclerView recyclerView, ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                            View itemView = viewHolder.itemView;
+                            Bitmap icon;
+                            Paint paint = new Paint();
+                            int iconSize = (int) (Math.abs(dX) / 2);
+                            iconSize = Math.min(iconSize, 100);
+                            if (dX > 0) {
+                                icon = BitmapFactory.decodeResource(
+                                        getContext().getResources(), R.drawable.ic_done);
+                                icon = Bitmap.createScaledBitmap(icon, iconSize > 0 ? iconSize : 1, iconSize > 0 ? iconSize : 1, false);
+                                paint.setColor(ContextCompat.getColor(getContext(), R.color.doneColor));
+
+                                c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
+                                        (float) itemView.getBottom(), paint);
+                                c.drawBitmap(icon,
+                                        (float) itemView.getLeft() + dpToPx(16),
+                                        (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight()) / 2,
+                                        paint);
+                            } else {
+                                icon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_bookmark);
+                                icon = Bitmap.createScaledBitmap(icon, iconSize > 0 ? iconSize : 1, iconSize > 0 ? iconSize : 1, false);
+                                paint.setColor(ContextCompat.getColor(getContext(), R.color.bookmarkColor));
+
+                                c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
+                                        (float) itemView.getRight(), (float) itemView.getBottom(), paint);
+                                c.drawBitmap(icon,
+                                        (float) itemView.getRight() - dpToPx(16) - icon.getWidth(),
+                                        (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight()) / 2,
+                                        paint);
+                            }
+                            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                        }
+                    }
+
+                    public int dpToPx(int dp) {
+                        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+                        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+                    }
+                };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
+
         return rootView;
     }
 
@@ -120,8 +278,8 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
                     getActivity(),
                     mUri,
                     QUESTION_COLUMNS,
-                    null,
-                    null,
+                    sDoneAndBookmark,
+                    new String[]{"0", "0"},
                     sortOrder);
         }
         return null;

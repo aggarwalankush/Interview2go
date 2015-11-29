@@ -122,7 +122,6 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                     @Override
                     public void onSwiped(ViewHolder viewHolder, int direction) {
                         int itemPosition = viewHolder.getAdapterPosition();
-                        Log.d(LOG_TAG, "swiped " + direction + " itemPosition " + itemPosition);
 
                         String topic = "invalid topic";
                         if (viewHolder instanceof TopicAdapterViewHolder) {
@@ -272,7 +271,7 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                 InterviewEntry.CONTENT_URI,
                 TOPIC_COLUMNS,
                 sDoneAndBookmark,
-                new String[]{"0","0"},
+                new String[]{"0", "0"},
                 sortOrder);
     }
 

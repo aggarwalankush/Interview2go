@@ -16,7 +16,7 @@ public class Utility {
     }
 
     public static int getImageResouce(String topic) {
-        switch (topic.toLowerCase()) {
+        switch (topic) {
             case "arrays":
                 return R.drawable.ic_arrays;
             case "bitwiseandmath":
