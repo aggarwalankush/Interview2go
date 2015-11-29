@@ -1,6 +1,7 @@
 package com.aggarwalankush.interview2go;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setItemIconTintList(null);
 
     }
 
@@ -100,7 +103,32 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_reset) {
+
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Undo Done and Delete Bookmarks")
+                    .setMessage("Are you sure you want to reset all questions?")
+                    .setPositiveButton("Reset", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(InterviewEntry.COLUMN_DONE, 0);
+                            contentValues.put(InterviewEntry.COLUMN_BOOKMARK, 0);
+                            MainActivity.this.getContentResolver().update(
+                                    InterviewEntry.CONTENT_URI,
+                                    contentValues,
+                                    null,
+                                    null
+                            );
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    }).setCancelable(false)
+                    .setIcon(R.drawable.ic_alert)
+                    .show();
 
         }
 
