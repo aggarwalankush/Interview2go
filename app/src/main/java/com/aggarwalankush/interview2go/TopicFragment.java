@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.aggarwalankush.interview2go.TopicAdapter.TopicAdapterOnClickHandler;
 import com.aggarwalankush.interview2go.TopicAdapter.TopicAdapterViewHolder;
@@ -180,6 +181,7 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     public static HashMap<String, Integer> topicToDoneQues = new HashMap<>();
+    public static HashMap<String, Integer> topicToTotalQues = new HashMap<>();
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -197,14 +199,29 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
             while (cursor.moveToNext()) {
                 topicToDoneQues.put(cursor.getString(COL_TOPIC), cursor.getInt(COL_TOTAL));
             }
+            cursor.close();
+        }
+
+        cursor = getContext().getContentResolver().query(
+                InterviewEntry.CONTENT_URI,
+                TOPIC_COLUMNS,
+                null,
+                null,
+                null);
+
+        if (null != cursor) {
+            while (cursor.moveToNext()) {
+                topicToTotalQues.put(cursor.getString(COL_TOPIC), cursor.getInt(COL_TOTAL));
+            }
+            cursor.close();
         }
 
         return new CursorLoader(
                 getActivity(),
                 InterviewEntry.CONTENT_URI,
                 TOPIC_COLUMNS,
-                null,
-                null,
+                sDoneSelection,
+                new String[]{"0"},
                 sortOrder);
     }
 
@@ -220,18 +237,18 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
 
     private void updateEmptyView() {
         if (mTopicAdapter.getItemCount() == 0) {
-//            TextView tv = (TextView) getView().findViewById(R.id.recyclerview_topic_empty);
-//            if (null != tv && !Utility.isNetworkAvailable(getActivity())) {
-//                tv.setText(R.string.empty_list_no_network);
-//            }
-            if (!Utility.isNetworkAvailable(getActivity())) {
-                progressDialog.setTitle(getContext().getString(R.string.progress_title_no_network));
-                progressDialog.setMessage(getContext().getString(R.string.progress_message_no_network));
+            if (topicToTotalQues.equals(topicToTotalQues)) {
+                TextView tv = (TextView) getView().findViewById(R.id.recyclerview_topic_empty);
+                if (null != tv) {
+                    tv.setText("Done with all questions");
+                }
+            } else {
+                if (!Utility.isNetworkAvailable(getActivity())) {
+                    progressDialog.setTitle(getContext().getString(R.string.progress_title_no_network));
+                    progressDialog.setMessage(getContext().getString(R.string.progress_message_no_network));
+                }
+                progressDialog.show();
             }
-
-            progressDialog.show();
-
-
         } else if (progressDialog != null) {
             progressDialog.dismiss();
         }

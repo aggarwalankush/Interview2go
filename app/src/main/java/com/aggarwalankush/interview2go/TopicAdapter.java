@@ -41,7 +41,10 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicAdapter
     public void onBindViewHolder(TopicAdapterViewHolder topicAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
         String topic = mCursor.getString(TopicFragment.COL_TOPIC);
-        int total = mCursor.getInt(TopicFragment.COL_TOTAL);
+        Integer total = TopicFragment.topicToTotalQues.get(topic);
+        if (null == total) {
+            total = 0;
+        }
         Integer done = TopicFragment.topicToDoneQues.get(topic);
         if (null == done) {
             done = 0;
