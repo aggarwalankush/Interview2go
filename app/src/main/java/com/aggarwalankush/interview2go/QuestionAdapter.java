@@ -43,7 +43,6 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHol
         String question = mCursor.getString(QuestionActivityFragment.COL_QUESTION);
         questionAdapterViewHolder.mQuestionView.setText(question);
         String topic = mCursor.getString(QuestionActivityFragment.COL_TOPIC);
-        questionAdapterViewHolder.mQuestionDetailView.setText(Utility.getDisplayTopicName(topic));
         questionAdapterViewHolder.mIconView.setImageResource(Utility.getImageResouce(topic));
     }
 
@@ -68,13 +67,11 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHol
     public class QuestionAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView mQuestionView;
         public final ImageView mIconView;
-        public final TextView mQuestionDetailView;
 
         public QuestionAdapterViewHolder(View view) {
             super(view);
             mIconView = (ImageView) view.findViewById(R.id.list_item_icon);
             mQuestionView = (TextView) view.findViewById(R.id.tv_question);
-            mQuestionDetailView = (TextView) view.findViewById(R.id.tv_question_detail);
             view.setOnClickListener(this);
         }
 

@@ -114,7 +114,6 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
 
-
         ItemTouchHelper.SimpleCallback simpleCallback =
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
                     @Override
@@ -131,8 +130,9 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
                         if (viewHolder instanceof QuestionAdapterViewHolder) {
                             TextView questionView = ((QuestionAdapterViewHolder) viewHolder).mQuestionView;
                             question = questionView.getText().toString();
-                            TextView topicView = ((QuestionAdapterViewHolder) viewHolder).mQuestionDetailView;
-                            topic = Utility.getDatabaseTopicName(topicView.getText().toString());
+                            if (mUri != null) {
+                                topic = InterviewEntry.getTopicFromUri(mUri);
+                            }
                         }
 
                         switch (direction) {

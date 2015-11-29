@@ -29,25 +29,16 @@
             android:layout_marginRight="?android:attr/listPreferredItemPaddingRight"
             />
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="7"
-            android:orientation="vertical">
-
+            android:layout_weight="7">
             <TextView
                 android:id="@+id/tv_question"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
-
-            <TextView
-                android:id="@+id/tv_question_detail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/secondary_text"/>
-        </LinearLayout>
+        </FrameLayout>
 
 
         <ImageView
