@@ -138,9 +138,6 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                         String bookmark_message = "Bookmarked";
                         String done_message = "Marked Done";
 
-                        int done_icon = R.drawable.ic_done;
-                        int done_color = R.color.doneColor;
-
                         switch (activityType) {
                             case Utility.BOOKMARK:
                                 //if bookmark view, undo bookmark on left swipe
@@ -150,8 +147,6 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                             case Utility.DONE:
                                 done = 0;
                                 done_message = "Removed from Done";
-                                done_icon = R.drawable.ic_cross;
-                                done_color = R.color.primary;
                                 break;
                         }
 
