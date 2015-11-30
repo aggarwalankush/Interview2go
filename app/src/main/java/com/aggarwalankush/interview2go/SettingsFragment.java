@@ -44,6 +44,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     private void setPreferenceSummary(Preference preference, Object value) {
         String stringValue = value.toString();
+        stringValue = stringValue.substring(0, 1).toUpperCase() + stringValue.substring(1);
         preference.setSummary(stringValue);
     }
 

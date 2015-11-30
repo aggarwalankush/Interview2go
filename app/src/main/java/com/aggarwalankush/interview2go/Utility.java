@@ -1,8 +1,10 @@
 package com.aggarwalankush.interview2go;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 
 public class Utility {
 
@@ -13,6 +15,18 @@ public class Utility {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
+    }
+
+
+    public static String getFontSize(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_font_key), context.getString(R.string.pref_font_normal));
+    }
+
+    public static boolean isDarkMode(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(context.getString(R.string.pref_enable_darkMode_key),
+                Boolean.parseBoolean(context.getString(R.string.pref_enable_darkMode_default)));
     }
 
     public static int getImageResouce(String topic) {

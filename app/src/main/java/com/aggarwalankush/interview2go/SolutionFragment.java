@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
@@ -41,12 +42,14 @@ public class SolutionFragment extends Fragment implements LoaderManager.LoaderCa
     private static final String[] SOL_OUT_COLUMNS = {
             InterviewEntry._ID,
             InterviewEntry.COLUMN_SOLUTION,
+            InterviewEntry.COLUMN_DARK_SOLUTION,
             InterviewEntry.COLUMN_OUTPUT
     };
 
     public static final int COL_ID = 0;
     public static final int COL_SOLUTION = 1;
-    public static final int COL_OUTPUT = 2;
+    public static final int COL_DARK_SOLUTION = 2;
+    public static final int COL_OUTPUT = 3;
 
     private TextView mSectionView;
 
@@ -125,7 +128,15 @@ public class SolutionFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor != null && cursor.moveToFirst()) {
 
-            String solution = cursor.getString(COL_SOLUTION);
+            boolean isDarkMode = Utility.isDarkMode(getActivity());
+            String solution;
+
+            if (isDarkMode) {
+                solution = cursor.getString(COL_DARK_SOLUTION);
+            } else {
+                solution = cursor.getString(COL_SOLUTION);
+            }
+
             solution = solution.replace("XBonus", "Bonus");
             Spanned spanned = Html.fromHtml(solution);
             String output = cursor.getString(COL_OUTPUT);
@@ -135,6 +146,9 @@ public class SolutionFragment extends Fragment implements LoaderManager.LoaderCa
                     mSectionView.setText(spanned);
                     break;
                 case OUTPUT:
+                    if (isDarkMode) {
+                        mSectionView.setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
+                    }
                     mSectionView.setText(output);
                     break;
                 default:
