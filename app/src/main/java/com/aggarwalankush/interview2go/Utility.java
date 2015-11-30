@@ -18,9 +18,18 @@ public class Utility {
     }
 
 
-    public static String getFontSize(Context context) {
+    public static int getFontSize(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(context.getString(R.string.pref_font_key), context.getString(R.string.pref_font_normal));
+        switch (prefs.getString(context.getString(R.string.pref_font_key), context.getString(R.string.pref_font_small))) {
+            case "small":
+                return android.R.style.TextAppearance_DeviceDefault_Small;
+            case "large":
+                return android.R.style.TextAppearance_DeviceDefault_Large;
+            case "normal":
+            default:
+                return android.R.style.TextAppearance_DeviceDefault_Medium;
+
+        }
     }
 
     public static boolean isDarkMode(Context context) {

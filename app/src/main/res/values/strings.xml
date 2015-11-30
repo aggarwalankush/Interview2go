@@ -48,12 +48,11 @@
     <string name="pref_font_label_small">Small</string>
     <string name="pref_font_label_normal">Normal</string>
     <string name="pref_font_label_large">Large</string>
-    <string name="pref_font_label_huge">Huge</string>
     <string name="pref_font_key" translatable="false">font</string>
     <string name="pref_font_small" translatable="false">small</string>
     <string name="pref_font_normal" translatable="false">normal</string>
     <string name="pref_font_large" translatable="false">large</string>
-    <string name="pref_font_huge" translatable="false">huge</string>
+
     <string name="forward_content_desc">forward icon</string>
 
     <!--Navigation drawer strings-->

@@ -2,14 +2,18 @@ package com.aggarwalankush.interview2go;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,12 +24,13 @@ import com.aggarwalankush.interview2go.sync.InterviewSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements TopicFragment.Callback, NavigationView.OnNavigationItemSelectedListener {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+        Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setTitle(R.string.title_activity_topic);
@@ -68,10 +73,20 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
 
         if (id == R.id.nav_home) {
             // Handle the camera action
+            if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
+            }
+            toolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimary));
         } else if (id == R.id.nav_done) {
-
+            if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.doneColorPrimaryDark));
+            }
+            toolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.doneColorPrimary));
         } else if (id == R.id.nav_bookmark) {
-
+            if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.bookmarkColorPrimaryDark));
+            }
+            toolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.bookmarkColorPrimary));
         } else if (id == R.id.nav_settings) {
 
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -80,10 +95,10 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         } else if (id == R.id.nav_reset) {
 
 
-            new AlertDialog.Builder(this)
+            new Builder(this)
                     .setTitle("Undo Done and Delete Bookmarks")
                     .setMessage("Are you sure you want to reset all questions?")
-                    .setPositiveButton("Reset", new DialogInterface.OnClickListener() {
+                    .setPositiveButton("Reset", new OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             ContentValues contentValues = new ContentValues();
                             contentValues.put(InterviewEntry.COLUMN_DONE, 0);
@@ -96,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
                             );
                         }
                     })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setNegativeButton("Cancel", new OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }

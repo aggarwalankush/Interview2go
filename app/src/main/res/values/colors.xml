@@ -4,10 +4,12 @@
     <color name="colorPrimaryDark">#004774</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="doneColor">#0F9D58</color>
+    <color name="doneColor">#009688</color>
+    <color name="doneColorPrimary">#009688</color>
+    <color name="doneColorPrimaryDark">#00796B</color>
     <color name="bookmarkColor">#EF6C00</color>
-
-
+    <color name="bookmarkColorPrimary">#EF6C00</color>
+    <color name="bookmarkColorPrimaryDark">#C65900</color>
 
     <color name="grey">#cccccc</color>
     <color name="white">#FFFFFF</color>

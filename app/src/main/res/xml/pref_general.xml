@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:defaultValue="@string/pref_font_normal"
+        android:defaultValue="@string/pref_font_small"
         android:entries="@array/pref_fonts_options"
         android:entryValues="@array/pref_fonts_values"
         android:key="@string/pref_font_key"

@@ -3,6 +3,8 @@ package com.aggarwalankush.interview2go;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -140,6 +142,12 @@ public class SolutionFragment extends Fragment implements LoaderManager.LoaderCa
             solution = solution.replace("XBonus", "Bonus");
             Spanned spanned = Html.fromHtml(solution);
             String output = cursor.getString(COL_OUTPUT);
+
+            if (VERSION.SDK_INT >= VERSION_CODES.M) {
+                mSectionView.setTextAppearance(Utility.getFontSize(getActivity()));
+            } else {
+                mSectionView.setTextAppearance(getActivity(),Utility.getFontSize(getActivity()));
+            }
 
             switch (mSectionName) {
                 case SOLUTION:
