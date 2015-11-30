@@ -8,14 +8,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -38,9 +36,6 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         InterviewSyncAdapter.initializeSyncAdapter(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        drawer.setStatusBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -52,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         navigationView.setItemIconTintList(null);
 
         Utility.setActivityType(this, Utility.HOME);
+        Utility.changeActivityName(this, getSupportActionBar());
     }
 
     @Override
@@ -66,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
 
     @Override
     public void onItemSelected(Uri topicUri) {
-        Log.d(LOG_TAG, "topic clicked " + topicUri);
+//        Log.d(LOG_TAG, "topic clicked " + topicUri);
         Intent intent = new Intent(this, QuestionActivity.class).setData(topicUri);
         startActivity(intent);
     }
