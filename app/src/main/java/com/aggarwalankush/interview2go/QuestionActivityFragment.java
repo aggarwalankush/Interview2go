@@ -188,7 +188,7 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
                                                 Log.d(LOG_TAG, "rows updated " + rowUpdated);
                                                 mQuestionAdapter.notifyDataSetChanged();
                                             }
-                                        }).show();
+                                        }).setDuration(5000).show();
                                 break;
                             }
                             case ItemTouchHelper.RIGHT: {
@@ -222,7 +222,7 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
                                                 Log.d(LOG_TAG, "rows updated " + rowUpdated);
                                                 mQuestionAdapter.notifyDataSetChanged();
                                             }
-                                        }).show();
+                                        }).setDuration(5000).show();
 
                                 break;
                             }
