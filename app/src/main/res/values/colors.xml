@@ -29,4 +29,7 @@
 
     <color name="dark_mode_color">#272822</color>
 
+
+    <color name="detail_accent_pane_background">#455A64</color>
+    <color name="detail_accent_label">#90A4AE</color>
 </resources>

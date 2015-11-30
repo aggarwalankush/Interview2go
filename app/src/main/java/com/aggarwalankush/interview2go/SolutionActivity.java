@@ -44,7 +44,7 @@ public class SolutionActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        Utility.changeActivityColor(this, toolbar,tabLayout);
+        Utility.changeActivityColor(this, toolbar,tabLayout,null);
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

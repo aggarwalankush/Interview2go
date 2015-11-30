@@ -3,6 +3,7 @@ package com.aggarwalankush.interview2go;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build.VERSION;
@@ -10,8 +11,11 @@ import android.os.Build.VERSION_CODES;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+
+import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 
 public class Utility {
 
@@ -72,7 +76,7 @@ public class Utility {
 
     }
 
-    public static void changeActivityColor(Activity activity, Toolbar toolbar, TabLayout tabLayout) {
+    public static void changeActivityColor(Activity activity, Toolbar toolbar, TabLayout tabLayout, DrawerLayout drawer) {
         String activityType=getActivityType(activity);
         int colorPrimary = getPrimaryColor(activityType);
         int colorPrimaryDark = getPrimaryDarkColor(activityType);
@@ -80,8 +84,10 @@ public class Utility {
         if (null != tabLayout) {
             tabLayout.setBackgroundColor(ContextCompat.getColor(activity, colorPrimary));
         }
-        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, colorPrimaryDark));
+        if (null != drawer) {
+            drawer.setStatusBarBackgroundColor(ContextCompat.getColor(activity, colorPrimaryDark));
+        }else if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity,colorPrimaryDark));
         }
     }
 
@@ -191,6 +197,24 @@ public class Utility {
                 return "xbonus";
         }
         return "Random";
+    }
+
+    public static String getQuestionsCount(Context context, String type) {
+        Cursor cursor = context.getContentResolver().query(
+                InterviewEntry.CONTENT_URI,
+                new String[]{"count(" + InterviewEntry.COLUMN_TOPIC + ") AS total"},
+                type + " = ? ",
+                new String[]{"1"},
+                null
+        );
+
+        int count = 0;
+        if (null != cursor) {
+            while (cursor.moveToNext()) {
+                count+=cursor.getInt(0);
+            }
+        }
+        return count+"";
     }
 
 }

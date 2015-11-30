@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                      xmlns:app="http://schemas.android.com/apk/res-auto"
+                                      xmlns:tools="http://schemas.android.com/tools"
+                                      android:layout_width="match_parent"
+                                      android:layout_height="match_parent"
+                                      android:background="@color/detail_accent_pane_background"
+                                      android:padding="32dp"
+                                      app:columnCount="2">
+
+    <TextView
+        android:id="@+id/tv_dialog_total_label"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center_vertical"
+        android:text="@string/overview_total_label"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/detail_accent_label"
+        app:layout_columnWeight="1"
+        app:layout_gravity="fill"
+        app:layout_rowWeight="1" />
+
+    <TextView
+        android:id="@+id/tv_dialog_total"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="@android:color/white"
+        app:layout_gravity="fill"
+        tools:text="100" />
+
+    <TextView
+        android:id="@+id/tv_dialog_done_label"
+        android:fontFamily="sans-serif"
+        android:gravity="center_vertical"
+        android:text="@string/overview_done_label"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/detail_accent_label"
+        app:layout_gravity="fill"
+        app:layout_rowWeight="1" />
+
+    <TextView
+        android:id="@+id/tv_dialog_done"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="@android:color/white"
+        app:layout_gravity="fill"
+        tools:text="0" />
+
+    <TextView
+        android:id="@+id/tv_dialog_bookmark_label"
+        android:fontFamily="sans-serif"
+        android:gravity="center_vertical"
+        android:text="@string/overview_bookmark_label"
+        android:textColor="@color/detail_accent_label"
+        android:textSize="20sp"
+        app:layout_gravity="fill"
+        app:layout_rowWeight="1" />
+
+
+    <TextView
+        android:id="@+id/tv_dialog_bookmark"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="@android:color/white"
+        app:layout_gravity="fill"
+        tools:text="0" />
+</android.support.v7.widget.GridLayout>

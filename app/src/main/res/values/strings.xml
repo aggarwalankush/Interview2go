@@ -67,7 +67,7 @@
     <string name="label_menu_reset">Reset</string>
     <string name="label_menu_settings">Settings</string>
     <string name="label_menu_rate_app">Rate App</string>
-
+    <string name="label_menu_overview">Overview</string>
 
     <!-- Rate app -->
     <string name="rate_app_title">Rate our App</string>
@@ -90,5 +90,9 @@
     <string name="done_empty_message">Nothing in Done</string>
     <string name="bookmark_empty_message">Nothing in Bookmark</string>
     <string name="home_empty_message">All questions done or bookmarked</string>
+    <string name="overview_total_label">Total Questions</string>
+    <string name="overview_done_label">Done</string>
+    <string name="overview_bookmark_label">Bookmark</string>
+
 
 </resources>

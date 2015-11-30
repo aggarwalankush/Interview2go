@@ -1,5 +1,6 @@
 package com.aggarwalankush.interview2go;
 
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,6 +17,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.TextView;
 
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 import com.aggarwalankush.interview2go.sync.InterviewSyncAdapter;
@@ -33,10 +38,14 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         InterviewSyncAdapter.initializeSyncAdapter(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        drawer.setStatusBarBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -111,19 +120,44 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
 
         } else if (id == R.id.nav_rate_app) {
             RateActivity.showRateAppDialog(MainActivity.this);
-        }
+        } else if (id == R.id.nav_overview) {
 
-        Utility.changeActivityColor(this, toolbar, null);
-        Utility.changeActivityName(this, getSupportActionBar());
+
+            final Dialog dialog = new Dialog(this);
+            dialog.getWindow();
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.overview_layout);
+
+            TextView tv_total = (TextView) dialog.findViewById(R.id.tv_dialog_total);
+            TextView tv_bookmark = (TextView) dialog.findViewById(R.id.tv_dialog_bookmark);
+            TextView tv_done = (TextView) dialog.findViewById(R.id.tv_dialog_done);
+
+            tv_total.setText("100");
+            tv_done.setText(Utility.getQuestionsCount(this, InterviewEntry.COLUMN_DONE));
+            tv_bookmark.setText(Utility.getQuestionsCount(this, InterviewEntry.COLUMN_BOOKMARK));
+            dialog.show();
+
+
+        }
 
         TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentById(R.id.topic_fragment);
 
         if (null != topicFragment) {
             topicFragment.onActivityTypeChanged();
         }
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
+        Utility.changeActivityColor(this, toolbar, null, drawer);
+        Utility.changeActivityName(this, getSupportActionBar());
+
+
         return true;
     }
+
 }
