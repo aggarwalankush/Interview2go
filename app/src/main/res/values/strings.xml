@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">Interview2go</string>
-    <string name="action_reset">Reset</string>
     <string name="title_activity_topic">Interview Topics</string>
     <string name="title_activity_question">QuestionActivity</string>
     <string name="title_activity_solution">SolutionActivity</string>
@@ -55,7 +54,7 @@
 
     <string name="forward_content_desc">forward icon</string>
 
-    <!--Navigation drawer strings-->
+    <!--Navigation drawer strings for content description-->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -74,5 +73,20 @@
     <string name="dialog_app_rate">Rate App</string>
     <string name="dialog_ask_later">Later</string>
     <string name="dialog_your_feedback">Give Feedback</string>
+
+    <!-- activity type shared preference -->
+    <string name="activity_type_shared_preference">activityTypeSP</string>
+    <string name="activity_type_key">activity_type</string>
+
+    <!-- Reset alert -->
+    <string name="reset_alert_title">Undo Done and Delete Bookmarks</string>
+    <string name="reset_alert_message">Are you sure you want to reset all questions?</string>
+    <string name="reset_alert_positive_label">Reset</string>
+    <string name="reset_alert_negative_label">Cancel</string>
+
+    <!-- empty topic lists messages -->
+    <string name="done_empty_message">Nothing in Done</string>
+    <string name="bookmark_empty_message">Nothing in Bookmark</string>
+    <string name="home_empty_message">All questions done or bookmarked</string>
 
 </resources>

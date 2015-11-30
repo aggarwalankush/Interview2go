@@ -5,11 +5,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,7 +21,7 @@ import com.aggarwalankush.interview2go.sync.InterviewSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements TopicFragment.Callback, NavigationView.OnNavigationItemSelectedListener {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
-        Toolbar toolbar;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
+        Utility.changeActivityColor(this, toolbar);
+
     }
 
     @Override
@@ -65,28 +64,22 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         startActivity(intent);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            // Handle the camera action
-            if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.colorPrimaryDark));
-            }
-            toolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimary));
+
+            Utility.setActivityType(this, Utility.HOME);
+
         } else if (id == R.id.nav_done) {
-            if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.doneColorPrimaryDark));
-            }
-            toolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.doneColorPrimary));
+
+            Utility.setActivityType(this, Utility.DONE);
+
         } else if (id == R.id.nav_bookmark) {
-            if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.bookmarkColorPrimaryDark));
-            }
-            toolbar.setBackgroundColor(ContextCompat.getColor(this,R.color.bookmarkColorPrimary));
+
+            Utility.setActivityType(this, Utility.BOOKMARK);
+
         } else if (id == R.id.nav_settings) {
 
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -94,11 +87,10 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
 
         } else if (id == R.id.nav_reset) {
 
-
             new Builder(this)
-                    .setTitle("Undo Done and Delete Bookmarks")
-                    .setMessage("Are you sure you want to reset all questions?")
-                    .setPositiveButton("Reset", new OnClickListener() {
+                    .setTitle(getString(R.string.reset_alert_title))
+                    .setMessage(getString(R.string.reset_alert_message))
+                    .setPositiveButton(getString(R.string.reset_alert_positive_label), new OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             ContentValues contentValues = new ContentValues();
                             contentValues.put(InterviewEntry.COLUMN_DONE, 0);
@@ -111,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
                             );
                         }
                     })
-                    .setNegativeButton("Cancel", new OnClickListener() {
+                    .setNegativeButton(getString(R.string.reset_alert_negative_label), new OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }
@@ -121,6 +113,14 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
 
         } else if (id == R.id.nav_rate_app) {
             RateActivity.showRateAppDialog(MainActivity.this);
+        }
+
+        Utility.changeActivityColor(this, toolbar);
+
+        TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentById(R.id.topic_fragment);
+
+        if (null != topicFragment) {
+            topicFragment.onActivityTypeChanged();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

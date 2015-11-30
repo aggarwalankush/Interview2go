@@ -1,12 +1,21 @@
 package com.aggarwalankush.interview2go;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 
 public class Utility {
+
+    public static final String HOME = "home";
+    public static final String DONE = "done";
+    public static final String BOOKMARK = "bookmark";
 
     static public boolean isNetworkAvailable(Context c) {
         ConnectivityManager cm =
@@ -29,6 +38,55 @@ public class Utility {
             default:
                 return android.R.style.TextAppearance_DeviceDefault_Medium;
 
+        }
+    }
+
+    public static void setActivityType(Context context, String type) {
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                context.getString(R.string.activity_type_shared_preference), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(context.getString(R.string.activity_type_key), type);
+        editor.commit();
+    }
+
+    public static String getActivityType(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                context.getString(R.string.activity_type_shared_preference), Context.MODE_PRIVATE);
+        return sharedPref.getString(context.getString(R.string.activity_type_key), HOME);
+    }
+
+
+    public static void changeActivityColor(Activity activity, Toolbar toolbar) {
+        String activityType=getActivityType(activity);
+        int colorPrimary = getPrimaryColor(activityType);
+        int colorPrimaryDark = getPrimaryDarkColor(activityType);
+        toolbar.setBackgroundColor(ContextCompat.getColor(activity, colorPrimary));
+        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+            activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, colorPrimaryDark));
+        }
+    }
+
+    private static int getPrimaryColor(String activityName) {
+        switch (activityName) {
+            case DONE:
+                return R.color.doneColorPrimary;
+            case BOOKMARK:
+                return R.color.bookmarkColorPrimary;
+            case HOME:
+            default:
+                return R.color.colorPrimary;
+        }
+    }
+
+    private static int getPrimaryDarkColor(String activityName) {
+        switch (activityName) {
+            case DONE:
+                return R.color.doneColorPrimaryDark;
+            case BOOKMARK:
+                return R.color.bookmarkColorPrimaryDark;
+            case HOME:
+            default:
+                return R.color.colorPrimaryDark;
         }
     }
 

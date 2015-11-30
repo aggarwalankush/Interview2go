@@ -69,6 +69,7 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
     private static final String sDoneAndBookmark =
             InterviewEntry.COLUMN_DONE + " = ? AND " + InterviewEntry.COLUMN_BOOKMARK + " = ? ";
 
+
     public interface Callback {
         void onItemSelected(Uri topicUri);
     }
@@ -129,11 +130,40 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                             topic = Utility.getDatabaseTopicName(topicView.getText().toString());
                         }
 
+                        String activityType = Utility.getActivityType(getActivity());
+                        Log.d(LOG_TAG, activityType);
+
+                        int bookmark = 1;
+                        int done = 1;
+                        String bookmark_message = "Bookmarked";
+                        String done_message = "Marked Done";
+
+                        int done_icon = R.drawable.ic_done;
+                        int done_color = R.color.doneColor;
+
+                        switch (activityType) {
+                            case Utility.BOOKMARK:
+                                //if bookmark view, undo bookmark on left swipe
+                                bookmark = 0;
+                                bookmark_message = "Removed Bookmark";
+                                break;
+                            case Utility.DONE:
+                                done = 0;
+                                done_message = "Removed from Done";
+                                done_icon = R.drawable.ic_cross;
+                                done_color = R.color.primary;
+                                break;
+                        }
+
+                        final int opp_bookmark = bookmark == 1 ? 0 : 1;
+                        final int opp_done = done == 1 ? 0 : 1;
+
                         switch (direction) {
                             case ItemTouchHelper.LEFT: {
                                 // bookmark item
                                 ContentValues contentValues = new ContentValues();
-                                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, 1);
+                                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, bookmark);
+                                contentValues.put(InterviewEntry.COLUMN_DONE, 0);
                                 getContext().getContentResolver().update(
                                         InterviewEntry.CONTENT_URI,
                                         contentValues,
@@ -143,12 +173,13 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                                 mTopicAdapter.notifyItemRemoved(itemPosition);
 
                                 final String finalTopic = topic;
-                                Snackbar.make(rootView, "BookMarked", Snackbar.LENGTH_LONG)
+                                Snackbar.make(rootView, bookmark_message, Snackbar.LENGTH_LONG)
                                         .setAction("Undo", new OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 ContentValues contentValues = new ContentValues();
-                                                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, 0);
+                                                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, opp_bookmark);
+                                                contentValues.put(InterviewEntry.COLUMN_DONE, opp_done);
                                                 int rowUpdated = getContext().getContentResolver().update(
                                                         InterviewEntry.CONTENT_URI,
                                                         contentValues,
@@ -164,7 +195,8 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                             case ItemTouchHelper.RIGHT: {
                                 // done item
                                 ContentValues contentValues = new ContentValues();
-                                contentValues.put(InterviewEntry.COLUMN_DONE, 1);
+                                contentValues.put(InterviewEntry.COLUMN_DONE, done);
+                                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, 0);
                                 getContext().getContentResolver().update(
                                         InterviewEntry.CONTENT_URI,
                                         contentValues,
@@ -174,12 +206,13 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                                 mTopicAdapter.notifyItemRemoved(itemPosition);
 
                                 final String finalTopic = topic;
-                                Snackbar.make(rootView, "Marked Done", Snackbar.LENGTH_LONG)
+                                Snackbar.make(rootView, done_message, Snackbar.LENGTH_LONG)
                                         .setAction("Undo", new OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 ContentValues contentValues = new ContentValues();
-                                                contentValues.put(InterviewEntry.COLUMN_DONE, 0);
+                                                contentValues.put(InterviewEntry.COLUMN_DONE, opp_done);
+                                                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, opp_bookmark);
                                                 int rowUpdated = getContext().getContentResolver().update(
                                                         InterviewEntry.CONTENT_URI,
                                                         contentValues,
@@ -201,6 +234,26 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                     @Override
                     public void onChildDraw(Canvas c, RecyclerView recyclerView, ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+
+                            String activityType = Utility.getActivityType(getActivity());
+
+                            int done_icon = R.drawable.ic_done;
+                            int done_color = R.color.doneColor;
+                            int bookmark_icon = R.drawable.ic_bookmark;
+                            int bookmark_color = R.color.bookmarkColor;
+
+                            switch (activityType) {
+                                case Utility.BOOKMARK:
+                                    bookmark_icon = R.drawable.ic_home;
+                                    bookmark_color = R.color.colorPrimary;
+                                    break;
+                                case Utility.DONE:
+                                    done_icon = R.drawable.ic_home;
+                                    done_color = R.color.colorPrimary;
+                                    break;
+                            }
+
+
                             View itemView = viewHolder.itemView;
                             Bitmap icon;
                             Paint paint = new Paint();
@@ -208,9 +261,9 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                             iconSize = Math.min(iconSize, 70);
                             if (dX > 0) {
                                 icon = BitmapFactory.decodeResource(
-                                        getContext().getResources(), R.drawable.ic_done);
+                                        getContext().getResources(), done_icon);
                                 icon = Bitmap.createScaledBitmap(icon, iconSize > 0 ? iconSize : 1, iconSize > 0 ? iconSize : 1, false);
-                                paint.setColor(ContextCompat.getColor(getContext(), R.color.doneColor));
+                                paint.setColor(ContextCompat.getColor(getContext(), done_color));
 
                                 c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
                                         (float) itemView.getBottom(), paint);
@@ -219,9 +272,9 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
                                         (float) itemView.getTop() + ((float) itemView.getBottom() - (float) itemView.getTop() - icon.getHeight()) / 2,
                                         paint);
                             } else {
-                                icon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_bookmark);
+                                icon = BitmapFactory.decodeResource(getContext().getResources(), bookmark_icon);
                                 icon = Bitmap.createScaledBitmap(icon, iconSize > 0 ? iconSize : 1, iconSize > 0 ? iconSize : 1, false);
-                                paint.setColor(ContextCompat.getColor(getContext(), R.color.bookmarkColor));
+                                paint.setColor(ContextCompat.getColor(getContext(), bookmark_color));
 
                                 c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
                                         (float) itemView.getRight(), (float) itemView.getBottom(), paint);
@@ -266,13 +319,35 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
 
         Log.d(LOG_TAG, "oncreateloader");
 
-        return new CursorLoader(
-                getActivity(),
-                InterviewEntry.CONTENT_URI,
-                TOPIC_COLUMNS,
-                sDoneAndBookmark,
-                new String[]{"0", "0"},
-                sortOrder);
+        String activityType = Utility.getActivityType(getActivity());
+        Log.d(LOG_TAG, activityType);
+        switch (activityType) {
+            case Utility.DONE:
+                return new CursorLoader(
+                        getActivity(),
+                        InterviewEntry.CONTENT_URI,
+                        TOPIC_COLUMNS,
+                        sDoneAndBookmark,
+                        new String[]{"1", "0"},
+                        sortOrder);
+            case Utility.BOOKMARK:
+                return new CursorLoader(
+                        getActivity(),
+                        InterviewEntry.CONTENT_URI,
+                        TOPIC_COLUMNS,
+                        sDoneAndBookmark,
+                        new String[]{"0", "1"},
+                        sortOrder);
+            case Utility.HOME:
+            default:
+                return new CursorLoader(
+                        getActivity(),
+                        InterviewEntry.CONTENT_URI,
+                        TOPIC_COLUMNS,
+                        sDoneAndBookmark,
+                        new String[]{"0", "0"},
+                        sortOrder);
+        }
     }
 
 
@@ -333,10 +408,20 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
 
     private void updateEmptyView() {
         if (mTopicAdapter.getItemCount() == 0) {
-            if (!topicToTotalQues.isEmpty() && topicToTotalQues.equals(topicToDoneQues)) {
-                TextView tv = (TextView) getView().findViewById(R.id.recyclerview_topic_empty);
-                if (null != tv) {
-                    tv.setText("All questions done or bookmarked");
+            String activityType = Utility.getActivityType(getActivity());
+            TextView tv = (TextView) getView().findViewById(R.id.recyclerview_topic_empty);
+            if (null != tv && !topicToTotalQues.isEmpty()) {
+                switch (activityType) {
+                    case Utility.DONE:
+                        tv.setText(R.string.done_empty_message);
+                        break;
+                    case Utility.BOOKMARK:
+                        tv.setText(R.string.bookmark_empty_message);
+                        break;
+                    case Utility.HOME:
+                    default:
+                        tv.setText(R.string.home_empty_message);
+                        break;
                 }
             } else {
                 if (!Utility.isNetworkAvailable(getActivity())) {
@@ -363,6 +448,10 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.d(LOG_TAG, "onloaderReset");
         mTopicAdapter.swapCursor(null);
+    }
+
+    void onActivityTypeChanged() {
+        getLoaderManager().restartLoader(TOPIC_LOADER, null, this);
     }
 
 }

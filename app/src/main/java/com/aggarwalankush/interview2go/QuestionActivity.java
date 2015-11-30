@@ -39,6 +39,7 @@ public class QuestionActivity extends AppCompatActivity implements QuestionActiv
             actionBar.setTitle(topic);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        Utility.changeActivityColor(this, toolbar);
     }
 
     @Override
