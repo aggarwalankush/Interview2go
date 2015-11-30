@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setTitle(R.string.title_activity_topic);
+
         InterviewSyncAdapter.initializeSyncAdapter(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -39,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
-
     }
 
     @Override
@@ -51,33 +52,6 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
             super.onBackPressed();
         }
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        if (id == R.id.action_reset) {
-//
-//            ContentValues contentValues = new ContentValues();
-//            contentValues.put(InterviewEntry.COLUMN_DONE, 0);
-//            contentValues.put(InterviewEntry.COLUMN_BOOKMARK, 0);
-//            this.getContentResolver().update(
-//                    InterviewEntry.CONTENT_URI,
-//                    contentValues,
-//                    null,
-//                    null
-//            );
-//
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 
     @Override
     public void onItemSelected(Uri topicUri) {
@@ -92,15 +66,13 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_home) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_done) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_bookmark) {
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_settings) {
 
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
@@ -128,10 +100,12 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }
-                    }).setCancelable(false)
+                    })
                     .setIcon(R.drawable.ic_alert)
                     .show();
 
+        } else if (id == R.id.nav_rate_app) {
+            RateActivity.showRateAppDialog(MainActivity.this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

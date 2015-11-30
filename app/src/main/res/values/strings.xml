@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name" translatable="false">Interview2go</string>
     <string name="action_reset">Reset</string>
+    <string name="title_activity_topic">Interview Topics</string>
     <string name="title_activity_question">QuestionActivity</string>
     <string name="title_activity_solution">SolutionActivity</string>
-    <string name="title_activity_settings"></string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- Account type (for sync-adapter authenticator) -->
     <!-- SyncAdapter related -->
@@ -58,4 +59,21 @@
     <!--Navigation drawer strings-->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- menu labels -->
+    <string name="label_menu_home">Home</string>
+    <string name="label_menu_done">Done</string>
+    <string name="label_menu_bookmark">Bookmark</string>
+    <string name="label_menu_reset">Reset</string>
+    <string name="label_menu_settings">Settings</string>
+    <string name="label_menu_rate_app">Rate App</string>
+
+
+    <!-- Rate app -->
+    <string name="rate_app_title">Rate our App</string>
+    <string name="rate_app_message">If you like our app, please take a moment to rate it in play store!</string>
+    <string name="dialog_app_rate">Rate App</string>
+    <string name="dialog_ask_later">Later</string>
+    <string name="dialog_your_feedback">Give Feedback</string>
+
 </resources>

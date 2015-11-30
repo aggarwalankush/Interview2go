@@ -213,7 +213,7 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
                             Bitmap icon;
                             Paint paint = new Paint();
                             int iconSize = (int) (Math.abs(dX) / 2);
-                            iconSize = Math.min(iconSize, 100);
+                            iconSize = Math.min(iconSize, 70);
                             if (dX > 0) {
                                 icon = BitmapFactory.decodeResource(
                                         getContext().getResources(), R.drawable.ic_done);

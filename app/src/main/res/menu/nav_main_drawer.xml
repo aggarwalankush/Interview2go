@@ -1,36 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/menu_group_1"
+        android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@android:drawable/ic_menu_camera"
-            android:title="Import"/>
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_menu_home"
+            android:title="@string/label_menu_home"
+            />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@android:drawable/ic_menu_gallery"
-            android:title="Gallery"/>
+            android:id="@+id/nav_bookmark"
+            android:icon="@drawable/ic_menu_bookmark"
+            android:title="@string/label_menu_bookmark"/>
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@android:drawable/ic_menu_slideshow"
-            android:title="Slideshow"/>
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@android:drawable/ic_menu_manage"
-            android:title="Tools"/>
+            android:id="@+id/nav_done"
+            android:icon="@drawable/ic_menu_done"
+            android:title="@string/label_menu_done"/>
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_recursiondp"
-                android:title="Share"/>
-            <item
-                android:id="@+id/nav_reset"
-                android:icon="@drawable/ic_reset"
-                android:title="@string/action_reset"/>
-        </menu>
-    </item>
+    <group android:id="@+id/menu_group_2">
+        <item
+            android:id="@+id/nav_reset"
+            android:icon="@drawable/ic_reset"
+            android:title="@string/label_menu_reset"/>
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/label_menu_settings"/>
+    </group>
+
+    <group android:id="@+id/menu_group_3">
+        <item
+            android:id="@+id/nav_rate_app"
+            android:icon="@drawable/ic_menu_rate"
+            android:title="@string/label_menu_rate_app"/>
+    </group>
 
 </menu>

@@ -30,12 +30,8 @@
         <activity
             android:name=".QuestionActivity"
             android:label="@string/title_activity_question"
-            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.aggarwalankush.interview2go.MainActivity"/>
         </activity>
         <activity
             android:name=".SolutionActivity"
