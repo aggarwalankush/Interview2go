@@ -274,13 +274,36 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
         if (mUri != null) {
             // Sort order:  Ascending, by topic name.
             String sortOrder = InterviewEntry.COLUMN_QUESTION + " ASC";
-            return new CursorLoader(
-                    getActivity(),
-                    mUri,
-                    QUESTION_COLUMNS,
-                    sDoneAndBookmark,
-                    new String[]{"0", "0"},
-                    sortOrder);
+            String activityType = Utility.getActivityType(getActivity());
+            Log.d(LOG_TAG, activityType);
+            switch (activityType) {
+                case Utility.DONE:
+                    return new CursorLoader(
+                            getActivity(),
+                            mUri,
+                            QUESTION_COLUMNS,
+                            sDoneAndBookmark,
+                            new String[]{"1", "0"},
+                            sortOrder);
+                case Utility.BOOKMARK:
+                    return new CursorLoader(
+                            getActivity(),
+                            mUri,
+                            QUESTION_COLUMNS,
+                            sDoneAndBookmark,
+                            new String[]{"0", "1"},
+                            sortOrder);
+                case Utility.HOME:
+                default:
+                    return new CursorLoader(
+                            getActivity(),
+                            mUri,
+                            QUESTION_COLUMNS,
+                            sDoneAndBookmark,
+                            new String[]{"0", "0"},
+                            sortOrder);
+            }
+
         }
         return null;
     }

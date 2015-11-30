@@ -8,7 +8,9 @@ import android.net.NetworkInfo;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.preference.PreferenceManager;
+import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 
 public class Utility {
@@ -55,12 +57,29 @@ public class Utility {
         return sharedPref.getString(context.getString(R.string.activity_type_key), HOME);
     }
 
+    public static void changeActivityName(Context context, ActionBar actionBar) {
+        switch (getActivityType(context)) {
+            case HOME:
+                actionBar.setTitle(R.string.title_activity_topic);
+                break;
+            case DONE:
+                actionBar.setTitle(R.string.title_activity_topic_done);
+                break;
+            case BOOKMARK:
+                actionBar.setTitle(R.string.title_activity_topic_bookmarked);
+                break;
+        }
 
-    public static void changeActivityColor(Activity activity, Toolbar toolbar) {
+    }
+
+    public static void changeActivityColor(Activity activity, Toolbar toolbar, TabLayout tabLayout) {
         String activityType=getActivityType(activity);
         int colorPrimary = getPrimaryColor(activityType);
         int colorPrimaryDark = getPrimaryDarkColor(activityType);
         toolbar.setBackgroundColor(ContextCompat.getColor(activity, colorPrimary));
+        if (null != tabLayout) {
+            tabLayout.setBackgroundColor(ContextCompat.getColor(activity, colorPrimary));
+        }
         if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, colorPrimaryDark));
         }

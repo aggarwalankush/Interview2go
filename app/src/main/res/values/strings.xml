@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Interview2go</string>
     <string name="title_activity_topic">Interview Topics</string>
+    <string name="title_activity_topic_done">Topics Done</string>
+    <string name="title_activity_topic_bookmarked">Topics Bookmarked</string>
     <string name="title_activity_question">QuestionActivity</string>
     <string name="title_activity_solution">SolutionActivity</string>
     <string name="title_activity_settings">Settings</string>

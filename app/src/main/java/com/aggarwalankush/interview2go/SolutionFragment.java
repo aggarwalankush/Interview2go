@@ -164,7 +164,7 @@ public class SolutionFragment extends Fragment implements LoaderManager.LoaderCa
             }
 
             String topic = InterviewEntry.getTopicFromUri(mUri);
-            topic = topic.replace("XBonus", "Bonus");
+            topic = Utility.getDisplayTopicName(topic);
             String question = InterviewEntry.getQuestionFromUri(mUri);
 
             mShareString =

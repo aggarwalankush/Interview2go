@@ -30,8 +30,6 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle(R.string.title_activity_topic);
-
         InterviewSyncAdapter.initializeSyncAdapter(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -43,7 +41,8 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemIconTintList(null);
-        Utility.changeActivityColor(this, toolbar);
+        Utility.changeActivityColor(this, toolbar,null);
+        Utility.changeActivityName(this, getSupportActionBar());
 
     }
 
@@ -115,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
             RateActivity.showRateAppDialog(MainActivity.this);
         }
 
-        Utility.changeActivityColor(this, toolbar);
-
+        Utility.changeActivityColor(this, toolbar, null);
+        Utility.changeActivityName(this, getSupportActionBar());
         TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentById(R.id.topic_fragment);
 
         if (null != topicFragment) {
