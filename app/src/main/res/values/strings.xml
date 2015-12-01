@@ -95,11 +95,13 @@
     <string name="overview_total_label">Total Questions</string>
     <string name="overview_done_label">Done</string>
     <string name="overview_bookmark_label">Bookmark</string>
+    <string name="overview_total_questions">100</string>
 
     <!-- search strings -->
     <string name="search_hint">Search Question</string>
     <string name="action_search">Search</string>
     <string name="settings_description">Questions</string>
+
 
 
 </resources>

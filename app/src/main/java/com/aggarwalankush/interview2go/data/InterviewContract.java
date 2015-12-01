@@ -15,6 +15,7 @@ public class InterviewContract {
 
         public static final String TABLE_NAME = "interview";
 
+        public static final String COLUMN_ROW_NO = "row_no";
         public static final String COLUMN_TOPIC = "topic";
         public static final String COLUMN_QUESTION = "question";
         public static final String COLUMN_SOLUTION = "solution";
@@ -52,6 +53,9 @@ public class InterviewContract {
             return uri.getPathSegments().get(2);
         }
 
+        public static int getRowNoFromUri(Uri uri) {
+            return Integer.parseInt(uri.getPathSegments().get(1));
+        }
     }
 
 }

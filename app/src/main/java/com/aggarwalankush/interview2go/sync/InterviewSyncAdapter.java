@@ -52,7 +52,7 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-
+        int count = 0;
         TreeMap<String, TreeMap<String, String>> topicToQueToOutput;
         Vector<ContentValues> cVVector = new Vector<>();
 
@@ -101,9 +101,10 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                 if (null != dark_solution) {
                     darkSolution = dark_solution;
                 }
-
+                count++;
                 // adding values to content values
                 ContentValues contentValues = new ContentValues();
+                contentValues.put(InterviewEntry.COLUMN_ROW_NO, count);
                 contentValues.put(InterviewEntry.COLUMN_TOPIC, topic.toLowerCase());
                 contentValues.put(InterviewEntry.COLUMN_QUESTION, question);
                 contentValues.put(InterviewEntry.COLUMN_SOLUTION, solution);

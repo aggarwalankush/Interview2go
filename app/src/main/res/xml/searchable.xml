@@ -6,5 +6,6 @@
             android:searchSuggestAuthority="com.aggarwalankush.interview2go.provider"
             android:searchSuggestIntentAction="android.intent.action.VIEW"
             android:searchSuggestSelection="question like ?"
+            android:searchSuggestIntentData="content://com.aggarwalankush.interview2go.provider/interview"
             android:searchSuggestThreshold="1">
 </searchable>

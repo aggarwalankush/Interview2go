@@ -30,19 +30,50 @@ public class SearchableActivity extends AppCompatActivity {
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            doMySearch(query);
+            actionSearchHelper(query);
         } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
             Uri data = intent.getData();
-            Log.d(LOG_TAG, data.toString());
+            Log.d(LOG_TAG, "Search Intent uri recieved " + data.toString());
+            String uriString = data.toString();
+            if (!uriString.startsWith("content")) {
+                uriString = "content://com.aggarwalankush.interview2go.provider/interview/";
+                uriString += data;
+            }
+            actionViewHelper(Uri.parse(uriString));
         }
     }
 
-    private void doMySearch(String query) {
 
+    private void actionViewHelper(Uri rowNoUri) {
+
+        Cursor cursor = getContentResolver().query(
+                rowNoUri,
+                new String[]{InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_QUESTION},
+                null,
+                null,
+                null);
+
+        if (null != cursor && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String topic = cursor.getString(0);
+            String question = cursor.getString(1);
+            Intent intent = new Intent(this, SolutionActivity.class);
+            intent.setData(InterviewEntry.buildTopicWithQuestion(topic, question));
+            intent.putExtra("search", 1);
+            startActivity(intent);
+            cursor.close();
+            return;
+        }
+
+        Intent h = new Intent(SearchableActivity.this, MainActivity.class);
+        h.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(h);
+    }
+
+
+    private void actionSearchHelper(String query) {
         Log.d(LOG_TAG, query);
-
-
         Uri uri = InterviewContract.BASE_CONTENT_URI.buildUpon()
                 .appendPath("search")
                 .appendPath(InterviewContract.PATH_INTERVIEW)
@@ -58,6 +89,7 @@ public class SearchableActivity extends AppCompatActivity {
                     intent.setData(InterviewEntry.buildTopicWithQuestion(cursor.getString(1), questionName));
                     intent.putExtra("search", 1);
                     startActivity(intent);
+                    cursor.close();
                     return;
                 }
             }

@@ -29,6 +29,7 @@ public class InterviewProvider extends ContentProvider {
     static final int INTERVIEW_WITH_TOPIC_AND_QUESTION = 102;
     static final int SEARCH_QUESTIONS = 103;
     static final int SEARCH_SUGGEST = 104;
+    static final int SEARCH_WITH_ROW_NO = 105;
 
     private static final SQLiteQueryBuilder sQueryBuilder;
 
@@ -42,6 +43,7 @@ public class InterviewProvider extends ContentProvider {
         final String authority = InterviewContract.CONTENT_AUTHORITY;
 
         matcher.addURI(authority, InterviewContract.PATH_INTERVIEW, INTERVIEW);
+        matcher.addURI(authority, InterviewContract.PATH_INTERVIEW + "/#", SEARCH_WITH_ROW_NO);
         matcher.addURI(authority, InterviewContract.PATH_INTERVIEW + "/*", INTERVIEW_WITH_TOPIC);
         matcher.addURI(authority, InterviewContract.PATH_INTERVIEW + "/*/*", INTERVIEW_WITH_TOPIC_AND_QUESTION);
         matcher.addURI(authority, "search/" + InterviewContract.PATH_INTERVIEW + "/*", SEARCH_QUESTIONS);
@@ -75,6 +77,9 @@ public class InterviewProvider extends ContentProvider {
 
     //topic = ?
     private static final String sTopicSelection = InterviewEntry.COLUMN_TOPIC + " = ? ";
+
+    //row_no = ?
+    private static final String sRowSelection = InterviewEntry.COLUMN_ROW_NO + " = ? ";
 
     //topic = ? AND question = ?
     private static final String sTopicAndQuestionSelection =
@@ -158,6 +163,20 @@ public class InterviewProvider extends ContentProvider {
                 );
                 break;
             }
+            case SEARCH_WITH_ROW_NO: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        InterviewEntry.TABLE_NAME,
+                        projection,
+                        sRowSelection,
+                        new String[]{String.valueOf(InterviewEntry.getRowNoFromUri(uri))},
+                        null,
+                        null,
+                        null,
+                        null
+                );
+
+                break;
+            }
             case SEARCH_QUESTIONS: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         InterviewEntry.TABLE_NAME,
@@ -175,13 +194,14 @@ public class InterviewProvider extends ContentProvider {
                 Map<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(InterviewEntry.COLUMN_QUESTION, InterviewEntry.COLUMN_QUESTION + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1);
                 projectionMap.put(InterviewEntry._ID, InterviewEntry._ID);
+                projectionMap.put(InterviewEntry.COLUMN_ROW_NO, InterviewEntry.COLUMN_ROW_NO + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA);
                 projectionMap.put(InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_TOPIC);
                 builder.setProjectionMap(projectionMap);
 
                 if (selectionArgs != null && selectionArgs.length > 0 && selectionArgs[0].length() > 0) {
 
                     retCursor = builder.query(mOpenHelper.getReadableDatabase(),
-                            new String[]{InterviewEntry._ID, InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_QUESTION},
+                            new String[]{InterviewEntry._ID, InterviewEntry.COLUMN_ROW_NO, InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_QUESTION},
                             InterviewEntry.COLUMN_QUESTION + " LIKE ? ",
                             new String[]{selectionArgs[0] + "%"},
                             null,
@@ -189,7 +209,7 @@ public class InterviewProvider extends ContentProvider {
                             null);
                 } else {
                     retCursor = builder.query(mOpenHelper.getReadableDatabase(),
-                            new String[]{InterviewEntry._ID, InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_QUESTION},
+                            new String[]{InterviewEntry._ID, InterviewEntry.COLUMN_ROW_NO, InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_QUESTION},
                             null,
                             null,
                             null,

@@ -22,6 +22,7 @@ public class InterviewDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_INTERVIEW_TABLE =
                 "CREATE TABLE " + InterviewEntry.TABLE_NAME + " ("
                         + InterviewEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                        + InterviewEntry.COLUMN_ROW_NO + " INTEGER NOT NULL,"
                         + InterviewEntry.COLUMN_TOPIC + " TEXT NOT NULL, "
                         + InterviewEntry.COLUMN_QUESTION + " TEXT NOT NULL, "
                         + InterviewEntry.COLUMN_SOLUTION + " TEXT NOT NULL, "

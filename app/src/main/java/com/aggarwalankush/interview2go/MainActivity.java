@@ -1,7 +1,9 @@
 package com.aggarwalankush.interview2go;
 
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -13,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,18 +58,18 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_search) {
-            onSearchRequested();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onBackPressed() {
@@ -146,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
             TextView tv_bookmark = (TextView) dialog.findViewById(R.id.tv_dialog_bookmark);
             TextView tv_done = (TextView) dialog.findViewById(R.id.tv_dialog_done);
 
-            tv_total.setText("100");
+            tv_total.setText(R.string.overview_total_questions);
             tv_done.setText(Utility.getQuestionsCount(this, InterviewEntry.COLUMN_DONE));
             tv_bookmark.setText(Utility.getQuestionsCount(this, InterviewEntry.COLUMN_BOOKMARK));
             dialog.show();
