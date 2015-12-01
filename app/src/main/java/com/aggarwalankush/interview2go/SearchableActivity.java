@@ -31,6 +31,10 @@ public class SearchableActivity extends AppCompatActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             doMySearch(query);
+        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
+            Uri data = intent.getData();
+            Log.d(LOG_TAG, data.toString());
         }
     }
 

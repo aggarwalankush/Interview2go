@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <searchable xmlns:android="http://schemas.android.com/apk/res/android"
+            android:hint="@string/search_hint"
             android:label="@string/app_name"
-            android:hint="@string/search_hint" >
+            android:searchSettingsDescription="@string/settings_description"
+            android:searchSuggestAuthority="com.aggarwalankush.interview2go.provider"
+            android:searchSuggestIntentAction="android.intent.action.VIEW"
+            android:searchSuggestSelection="question like ?"
+            android:searchSuggestThreshold="1">
 </searchable>

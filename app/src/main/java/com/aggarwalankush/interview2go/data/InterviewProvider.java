@@ -1,5 +1,6 @@
 package com.aggarwalankush.interview2go.data;
 
+import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -14,7 +15,9 @@ import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InterviewProvider extends ContentProvider {
 
@@ -25,6 +28,7 @@ public class InterviewProvider extends ContentProvider {
     static final int INTERVIEW_WITH_TOPIC = 101;
     static final int INTERVIEW_WITH_TOPIC_AND_QUESTION = 102;
     static final int SEARCH_QUESTIONS = 103;
+    static final int SEARCH_SUGGEST = 104;
 
     private static final SQLiteQueryBuilder sQueryBuilder;
 
@@ -41,7 +45,8 @@ public class InterviewProvider extends ContentProvider {
         matcher.addURI(authority, InterviewContract.PATH_INTERVIEW + "/*", INTERVIEW_WITH_TOPIC);
         matcher.addURI(authority, InterviewContract.PATH_INTERVIEW + "/*/*", INTERVIEW_WITH_TOPIC_AND_QUESTION);
         matcher.addURI(authority, "search/" + InterviewContract.PATH_INTERVIEW + "/*", SEARCH_QUESTIONS);
-
+        matcher.addURI(authority, SearchManager.SUGGEST_URI_PATH_QUERY, SEARCH_SUGGEST);
+        matcher.addURI(authority, SearchManager.SUGGEST_URI_PATH_QUERY + "/*", SEARCH_SUGGEST);
         return matcher;
     }
 
@@ -158,10 +163,41 @@ public class InterviewProvider extends ContentProvider {
                         InterviewEntry.TABLE_NAME,
                         new String[]{InterviewEntry._ID, InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_QUESTION},
                         InterviewEntry.COLUMN_QUESTION + " LIKE ? ",
-                        new String[]{"%" + selectionArgs[0] + "%"},
+                        new String[]{selectionArgs[0] + "%"},
                         null,
                         null,
                         null);
+                break;
+            }
+            case SEARCH_SUGGEST: {
+                SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+                builder.setTables(InterviewEntry.TABLE_NAME);
+                Map<String, String> projectionMap = new HashMap<>();
+                projectionMap.put(InterviewEntry.COLUMN_QUESTION, InterviewEntry.COLUMN_QUESTION + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1);
+                projectionMap.put(InterviewEntry._ID, InterviewEntry._ID);
+                projectionMap.put(InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_TOPIC);
+                builder.setProjectionMap(projectionMap);
+
+                if (selectionArgs != null && selectionArgs.length > 0 && selectionArgs[0].length() > 0) {
+
+                    retCursor = builder.query(mOpenHelper.getReadableDatabase(),
+                            new String[]{InterviewEntry._ID, InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_QUESTION},
+                            InterviewEntry.COLUMN_QUESTION + " LIKE ? ",
+                            new String[]{selectionArgs[0] + "%"},
+                            null,
+                            null,
+                            null);
+                } else {
+                    retCursor = builder.query(mOpenHelper.getReadableDatabase(),
+                            new String[]{InterviewEntry._ID, InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_QUESTION},
+                            null,
+                            null,
+                            null,
+                            null,
+                            null);
+                }
+
+
                 break;
             }
             default:
