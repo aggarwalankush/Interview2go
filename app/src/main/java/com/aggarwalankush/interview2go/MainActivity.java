@@ -8,7 +8,10 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -29,6 +32,7 @@ import com.aggarwalankush.interview2go.sync.InterviewSyncAdapter;
 public class MainActivity extends AppCompatActivity implements TopicFragment.Callback, NavigationView.OnNavigationItemSelectedListener {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     Toolbar toolbar;
+    AppBarLayout appBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         setContentView(R.layout.navigation_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
         InterviewSyncAdapter.initializeSyncAdapter(this);
 
@@ -172,9 +178,18 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
 
         Utility.changeActivityColor(this, toolbar, null, drawer);
         Utility.changeActivityName(this, getSupportActionBar());
+        if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
+            appBarLayout.setPadding(0, getStatusBarHeight(), 0, 0);
+        }
+            return true;
+        }
 
-
-        return true;
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
-
 }

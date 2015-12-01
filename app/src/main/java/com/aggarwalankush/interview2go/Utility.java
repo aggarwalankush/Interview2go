@@ -77,7 +77,7 @@ public class Utility {
     }
 
     public static void changeActivityColor(Activity activity, Toolbar toolbar, TabLayout tabLayout, DrawerLayout drawer) {
-        String activityType=getActivityType(activity);
+        String activityType = getActivityType(activity);
         int colorPrimary = getPrimaryColor(activityType);
         int colorPrimaryDark = getPrimaryDarkColor(activityType);
         toolbar.setBackgroundColor(ContextCompat.getColor(activity, colorPrimary));
