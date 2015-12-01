@@ -3,8 +3,15 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.aggarwalankush.interview2go.MainActivity">
     <!--<item-->
-        <!--android:id="@+id/action_reset"-->
-        <!--android:orderInCategory="100"-->
-        <!--android:title="@string/action_reset"-->
-        <!--app:showAsAction="never"/>-->
+    <!--android:id="@+id/action_reset"-->
+    <!--android:orderInCategory="100"-->
+    <!--android:title="@string/action_reset"-->
+    <!--app:showAsAction="never"/>-->
+
+    <item
+        android:id="@+id/action_search"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/ic_search"
+        android:title="@string/action_search"
+        app:showAsAction="ifRoom|collapseActionView"/>
 </menu>

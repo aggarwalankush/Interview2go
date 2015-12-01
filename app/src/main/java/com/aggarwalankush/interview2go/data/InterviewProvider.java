@@ -24,6 +24,7 @@ public class InterviewProvider extends ContentProvider {
     static final int INTERVIEW = 100;
     static final int INTERVIEW_WITH_TOPIC = 101;
     static final int INTERVIEW_WITH_TOPIC_AND_QUESTION = 102;
+    static final int SEARCH_QUESTIONS = 103;
 
     private static final SQLiteQueryBuilder sQueryBuilder;
 
@@ -39,6 +40,7 @@ public class InterviewProvider extends ContentProvider {
         matcher.addURI(authority, InterviewContract.PATH_INTERVIEW, INTERVIEW);
         matcher.addURI(authority, InterviewContract.PATH_INTERVIEW + "/*", INTERVIEW_WITH_TOPIC);
         matcher.addURI(authority, InterviewContract.PATH_INTERVIEW + "/*/*", INTERVIEW_WITH_TOPIC_AND_QUESTION);
+        matcher.addURI(authority, "search/" + InterviewContract.PATH_INTERVIEW + "/*", SEARCH_QUESTIONS);
 
         return matcher;
     }
@@ -59,6 +61,8 @@ public class InterviewProvider extends ContentProvider {
                 return InterviewEntry.CONTENT_TYPE;
             case INTERVIEW_WITH_TOPIC_AND_QUESTION:
                 return InterviewEntry.CONTENT_ITEM_TYPE;
+            case SEARCH_QUESTIONS:
+                return InterviewEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -91,9 +95,9 @@ public class InterviewProvider extends ContentProvider {
                     List<String> list = new ArrayList<>(Arrays.asList(selectionArgs));
                     list.add(topic);
                     list.add(question);
-                    selectionArgs = list.toArray(new String[len+1]);
+                    selectionArgs = list.toArray(new String[len + 1]);
                 } else {
-                    selectionArgs = new String[]{topic,question};
+                    selectionArgs = new String[]{topic, question};
                 }
 
                 retCursor = sQueryBuilder.query(mOpenHelper.getReadableDatabase(),
@@ -119,7 +123,7 @@ public class InterviewProvider extends ContentProvider {
                     int len = selectionArgs.length;
                     List<String> list = new ArrayList<>(Arrays.asList(selectionArgs));
                     list.add(topic);
-                    selectionArgs = list.toArray(new String[len+1]);
+                    selectionArgs = list.toArray(new String[len + 1]);
                 } else {
                     selectionArgs = new String[]{topic};
                 }
@@ -147,6 +151,17 @@ public class InterviewProvider extends ContentProvider {
                         sortOrder,
                         null
                 );
+                break;
+            }
+            case SEARCH_QUESTIONS: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        InterviewEntry.TABLE_NAME,
+                        new String[]{InterviewEntry._ID, InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_QUESTION},
+                        InterviewEntry.COLUMN_QUESTION + " LIKE ? ",
+                        new String[]{"%" + selectionArgs[0] + "%"},
+                        null,
+                        null,
+                        null);
                 break;
             }
             default:
