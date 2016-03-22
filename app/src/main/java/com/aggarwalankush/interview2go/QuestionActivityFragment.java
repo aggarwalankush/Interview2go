@@ -116,6 +116,9 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
 
         ItemTouchHelper.SimpleCallback simpleCallback =
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+
+
                     @Override
                     public boolean onMove(RecyclerView recyclerView, ViewHolder viewHolder, ViewHolder target) {
                         return false;

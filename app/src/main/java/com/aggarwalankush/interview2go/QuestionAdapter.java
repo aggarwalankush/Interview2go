@@ -82,6 +82,8 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHol
             int question_index = mCursor.getColumnIndex(InterviewEntry.COLUMN_QUESTION);
             mClickHandler.onClick(mCursor.getString(question_index), this);
         }
+
+
     }
 
 

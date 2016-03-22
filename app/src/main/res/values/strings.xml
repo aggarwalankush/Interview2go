@@ -39,7 +39,7 @@
 
     <!-- Strings related to Dark Mode Enabled preference -->
     <string name="pref_enable_darkMode_key" translatable="false">enable_darkMode</string>
-    <string name="pref_enable_darkMode_label">Dark Mode</string>
+    <string name="pref_enable_darkMode_label">Code Editor Dark Mode</string>
     <string name="pref_enable_darkMode_true">Enabled</string>
     <string name="pref_enable_darkMode_false">Not Enabled</string>
     <string name="pref_enable_darkMode_default" translatable="false">false</string>
@@ -81,7 +81,7 @@
     <string name="activity_type_key">activity_type</string>
 
     <!-- Reset alert -->
-    <string name="reset_alert_title">Undo Done and Delete Bookmarks</string>
+    <string name="reset_alert_title">Undo Done and Bookmarks</string>
     <string name="reset_alert_message">Are you sure you want to reset all questions?</string>
     <string name="reset_alert_positive_label">Reset</string>
     <string name="reset_alert_negative_label">Cancel</string>

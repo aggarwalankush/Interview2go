@@ -28,7 +28,7 @@ public class RateActivity {
         try {
             str = paramContext.getPackageManager().getPackageInfo(paramContext.getPackageName(), 0).versionName;
             localIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback for Your Android App");
-            localIntent.putExtra(Intent.EXTRA_TEXT, "\n\n----------------------------------\n Device OS: Android \n Device OS version: " +
+            localIntent.putExtra(Intent.EXTRA_TEXT, "\n\n--Type feedback here--\n\n----------------------------------\n Device OS: Android \n Device OS version: " +
                     Build.VERSION.RELEASE + "\n App Version: " + str + "\n Device Brand: " + Build.BRAND +
                     "\n Device Model: " + Build.MODEL + "\n Device Manufacturer: " + Build.MANUFACTURER);
             paramContext.startActivity(Intent.createChooser(localIntent, "Choose an Email client :"));
