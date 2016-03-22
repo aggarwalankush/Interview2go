@@ -11,7 +11,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,10 +119,10 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
         // Sort order:  Ascending, by topic name.
         String sortOrder = InterviewEntry.COLUMN_TOPIC + " ASC";
 
-        Log.d(LOG_TAG, "oncreateloader");
+//        Log.d(LOG_TAG, "oncreateloader");
 
         String activityType = Utility.getActivityType(getActivity());
-        Log.d(LOG_TAG, activityType);
+//        Log.d(LOG_TAG, activityType);
         switch (activityType) {
             case Utility.DONE:
                 return new CursorLoader(
@@ -159,7 +158,7 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
         topicToDoneQues = new HashMap<>();
         topicToBookmarkQues = new HashMap<>();
         topicToTotalQues = new HashMap<>();
-        Log.d(LOG_TAG, "onloadfinished");
+//        Log.d(LOG_TAG, "onloadfinished");
         Cursor cursor = getContext().getContentResolver().query(
                 InterviewEntry.CONTENT_URI,
                 TOPIC_COLUMNS,
@@ -249,7 +248,7 @@ public class TopicFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.d(LOG_TAG, "onloaderReset");
+//        Log.d(LOG_TAG, "onloaderReset");
         mTopicAdapter.swapCursor(null);
     }
 

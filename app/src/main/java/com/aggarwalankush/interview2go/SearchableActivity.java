@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.aggarwalankush.interview2go.data.InterviewContract;
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
@@ -34,7 +33,7 @@ public class SearchableActivity extends AppCompatActivity {
         } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             // Handle a suggestions click (because the suggestions all use ACTION_VIEW)
             Uri data = intent.getData();
-            Log.d(LOG_TAG, "Search Intent uri recieved " + data.toString());
+//            Log.d(LOG_TAG, "Search Intent uri recieved " + data.toString());
             String uriString = data.toString();
             if (!uriString.startsWith("content")) {
                 uriString = "content://com.aggarwalankush.interview2go.provider/interview/";
@@ -73,7 +72,7 @@ public class SearchableActivity extends AppCompatActivity {
 
 
     private void actionSearchHelper(String query) {
-        Log.d(LOG_TAG, query);
+//        Log.d(LOG_TAG, query);
         Uri uri = InterviewContract.BASE_CONTENT_URI.buildUpon()
                 .appendPath("search")
                 .appendPath(InterviewContract.PATH_INTERVIEW)

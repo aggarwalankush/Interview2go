@@ -19,7 +19,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -188,7 +187,7 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
                                                         sTopicAndQuestion,
                                                         new String[]{finalTopic, finalQuestion}
                                                 );
-                                                Log.d(LOG_TAG, "rows updated " + rowUpdated);
+//                                                Log.d(LOG_TAG, "rows updated " + rowUpdated);
                                                 mQuestionAdapter.notifyDataSetChanged();
                                             }
                                         }).setDuration(5000).show();
@@ -222,7 +221,7 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
                                                         sTopicAndQuestion,
                                                         new String[]{finalTopic, finalQuestion}
                                                 );
-                                                Log.d(LOG_TAG, "rows updated " + rowUpdated);
+//                                                Log.d(LOG_TAG, "rows updated " + rowUpdated);
                                                 mQuestionAdapter.notifyDataSetChanged();
                                             }
                                         }).setDuration(5000).show();
@@ -322,7 +321,7 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
             // Sort order:  Ascending, by topic name.
             String sortOrder = InterviewEntry.COLUMN_QUESTION + " ASC";
             String activityType = Utility.getActivityType(getActivity());
-            Log.d(LOG_TAG, activityType);
+//            Log.d(LOG_TAG, activityType);
             switch (activityType) {
                 case Utility.DONE:
                     return new CursorLoader(

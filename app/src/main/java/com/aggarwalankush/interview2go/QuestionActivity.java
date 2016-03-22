@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
@@ -44,7 +43,7 @@ public class QuestionActivity extends AppCompatActivity implements QuestionActiv
 
     @Override
     public void onItemSelected(Uri questionUri) {
-        Log.d(LOG_TAG, "question clicked " + questionUri);
+//        Log.d(LOG_TAG, "question clicked " + questionUri);
         Intent intent = new Intent(this, SolutionActivity.class).setData(questionUri);
         startActivity(intent);
     }

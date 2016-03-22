@@ -14,7 +14,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.aggarwalankush.interview2go.R;
 import com.aggarwalankush.interview2go.TopicFragment;
@@ -253,7 +252,7 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
 
             return builder.toString();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "IO Exception", e);
+//            Log.e(LOG_TAG, "IO Exception", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -262,7 +261,7 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                 try {
                     reader.close();
                 } catch (final IOException e) {
-                    Log.e(LOG_TAG, "Error closing stream", e);
+//                    Log.e(LOG_TAG, "Error closing stream", e);
                 }
             }
         }

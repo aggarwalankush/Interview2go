@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
 public class RateActivity {
 
@@ -33,7 +32,7 @@ public class RateActivity {
                     "\n Device Model: " + Build.MODEL + "\n Device Manufacturer: " + Build.MANUFACTURER);
             paramContext.startActivity(Intent.createChooser(localIntent, "Choose an Email client :"));
         } catch (Exception e) {
-            Log.d("OpenFeedback", e.getMessage());
+//            Log.d("OpenFeedback", e.getMessage());
         }
     }
 
