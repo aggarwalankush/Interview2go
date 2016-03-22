@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="com.aggarwalankush.interview2go"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest package="com.aggarwalankush.interview2go"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -26,14 +25,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <meta-data android:name="android.app.default_searchable"
-                       android:value=".SearchableActivity" />
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchableActivity"/>
         </activity>
         <activity
             android:name=".QuestionActivity"
             android:label="@string/title_activity_question"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
             android:name=".SolutionActivity"
@@ -52,15 +53,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.aggarwalankush.interview2go.MainActivity"/>
         </activity>
-        <activity android:name=".SearchableActivity"
+        <activity
+            android:name=".SearchableActivity"
             android:launchMode="singleTop">
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
+                <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                       android:resource="@xml/searchable"/>
-        </activity>
 
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+        </activity>
 
         <provider
             android:name=".data.InterviewProvider"
@@ -91,6 +94,9 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter"/>
         </service>
+
+        <activity android:name=".IntroActivity" android:theme="@style/FullscreenTheme">
+        </activity>
     </application>
 
 </manifest>
