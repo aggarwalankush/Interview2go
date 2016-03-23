@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.aggarwalankush.interview2go.R;
 import com.aggarwalankush.interview2go.TopicFragment;
@@ -37,8 +38,8 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
     public final String LOG_TAG = InterviewSyncAdapter.class.getSimpleName();
 
     // Interval at which to sync with the github, in seconds.
-    // 5 * 24 * 60 * 60  = 5 days
-    public static final int SYNC_INTERVAL = 5 * 24 * 60 * 60;
+    // 30 * 24 * 60 * 60  = 30 days
+    public static final int SYNC_INTERVAL = 30 * 24 * 60 * 60;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
 
     boolean updateProgressTitle = true;
@@ -221,7 +222,7 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     public String getDataFromServer(Uri builtUri) {
-
+        Log.d(LOG_TAG, "getting data from server");
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -265,17 +266,18 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             }
         }
+
         return null;
     }
 
 
-//    public static void syncImmediately(Context context) {
-//        Bundle bundle = new Bundle();
-//        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-//        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-//        ContentResolver.requestSync(getSyncAccount(context),
-//                context.getString(R.string.content_authority), bundle);
-//    }
+    public static void syncImmediately(Context context) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        ContentResolver.requestSync(getSyncAccount(context),
+                context.getString(R.string.content_authority), bundle);
+    }
 
     public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
         Account account = getSyncAccount(context);

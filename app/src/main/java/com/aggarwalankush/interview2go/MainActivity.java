@@ -22,6 +22,7 @@ import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,6 +48,12 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
         InterviewSyncAdapter.initializeSyncAdapter(this);
+
+        Log.d(LOG_TAG, new InterviewSyncAdapter(this, true).isEmptyDB() + "");
+
+        if (new InterviewSyncAdapter(this, true).isEmptyDB()) {
+            InterviewSyncAdapter.syncImmediately(this);
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -84,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
                     SharedPreferences.Editor e = getPrefs.edit();
 
                     //  Edit preference to make it false because we don't want this to run again
-                   e.putBoolean("firstStart", false);
+                    e.putBoolean("firstStart", false);
 
                     //  Apply changes
                     e.apply();
@@ -218,8 +225,8 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
         if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
             appBarLayout.setPadding(0, getStatusBarHeight(), 0, 0);
         }
-            return true;
-        }
+        return true;
+    }
 
     public int getStatusBarHeight() {
         int result = 0;
