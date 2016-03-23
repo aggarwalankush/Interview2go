@@ -14,7 +14,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.aggarwalankush.interview2go.R;
 import com.aggarwalankush.interview2go.TopicFragment;
@@ -38,15 +37,22 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
     public final String LOG_TAG = InterviewSyncAdapter.class.getSimpleName();
 
     // Interval at which to sync with the github, in seconds.
-    // 30 * 24 * 60 * 60  = 30 days
-    public static final int SYNC_INTERVAL = 30 * 24 * 60 * 60;
+    // 60 * 24 * 60 * 60  = 60 days
+    public static final int SYNC_INTERVAL = 60 * 24 * 60 * 60;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
+
+    //topic = ? AND question = ?
+    private static final String sTopicAndQuestion =
+            InterviewEntry.COLUMN_TOPIC + " = ? AND " + InterviewEntry.COLUMN_QUESTION + " = ? ";
 
     boolean updateProgressTitle = true;
     boolean emptyDB = false;
 
+    Context context;
+
     public InterviewSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
+        this.context = context;
     }
 
 
@@ -74,11 +80,39 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
             for (Entry<String, String> quesToOutputEntry : stringTreeMapEntry.getValue().entrySet()) {
                 String question = quesToOutputEntry.getKey();
                 String output = quesToOutputEntry.getValue();
+
+                count++;
+                // adding values to content values
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(InterviewEntry.COLUMN_ROW_NO, count);
+                contentValues.put(InterviewEntry.COLUMN_TOPIC, topic.toLowerCase());
+                contentValues.put(InterviewEntry.COLUMN_QUESTION, question);
+                contentValues.put(InterviewEntry.COLUMN_OUTPUT, output);
+                cVVector.add(contentValues);
+
+                // update progress bar
+                updateProgressBar();
+            }
+        }
+
+        // insert into database
+        if (cVVector.size() > 0) {
+            ContentValues[] cvArray = new ContentValues[cVVector.size()];
+            cVVector.toArray(cvArray);
+            getContext().getContentResolver().bulkInsert(InterviewEntry.CONTENT_URI, cvArray);
+        }
+
+
+        ////////
+
+        for (Entry<String, TreeMap<String, String>> stringTreeMapEntry : topicToQueToOutput.entrySet()) {
+            String topic = stringTreeMapEntry.getKey();
+            for (Entry<String, String> quesToOutputEntry : stringTreeMapEntry.getValue().entrySet()) {
+                String question = quesToOutputEntry.getKey();
                 String solution = "Invalid Solution";
                 String darkSolution = "Invalid Solution";
                 int bookmark = getBookmark(topic, question);
                 int done = getDone(topic, question);
-
 
                 // light solution handling
                 Uri lightSolutionUri = Uri.parse(SERVER_BASE_URL).buildUpon()
@@ -98,6 +132,55 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                         .appendPath(question)
                         .build();
                 String dark_solution = getDataFromServer(darkSolutionUri);
+                if (null != dark_solution) {
+                    darkSolution = dark_solution;
+                }
+
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(InterviewEntry.COLUMN_SOLUTION, solution);
+                contentValues.put(InterviewEntry.COLUMN_DARK_SOLUTION, darkSolution);
+                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, bookmark);
+                contentValues.put(InterviewEntry.COLUMN_DONE, done);
+
+                getContext().getContentResolver().update(
+                        InterviewEntry.CONTENT_URI,
+                        contentValues,
+                        sTopicAndQuestion,
+                        new String[]{topic.toLowerCase(), question}
+                );
+
+            }
+        }
+//////
+    }
+
+
+    public void onLocalPerformSync() {
+        int count = 0;
+        TreeMap<String, TreeMap<String, String>> topicToQueToOutput;
+        Vector<ContentValues> cVVector = new Vector<>();
+
+        String outputJsonStr = getDataFromApp("Output.json");
+        topicToQueToOutput = jsonToMap(outputJsonStr);
+
+
+        for (Entry<String, TreeMap<String, String>> stringTreeMapEntry : topicToQueToOutput.entrySet()) {
+            String topic = stringTreeMapEntry.getKey();
+            for (Entry<String, String> quesToOutputEntry : stringTreeMapEntry.getValue().entrySet()) {
+                String question = quesToOutputEntry.getKey();
+                String output = quesToOutputEntry.getValue();
+                String solution = "Invalid Solution";
+                String darkSolution = "Invalid Solution";
+                int bookmark = getBookmark(topic, question);
+                int done = getDone(topic, question);
+
+                String light_solution = getDataFromApp("LightModeHtml/" + topic + "/" + question);
+                if (null != light_solution) {
+                    solution = light_solution;
+                }
+
+                String dark_solution = getDataFromApp("DarkModeHtml/"+topic+"/"+question);
                 if (null != dark_solution) {
                     darkSolution = dark_solution;
                 }
@@ -127,6 +210,9 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
     }
+
+
+
 
     public TreeMap<String, TreeMap<String, String>> jsonToMap(String outputJsonStr) {
         TreeMap<String, TreeMap<String, String>> topicToQueToOutput = new TreeMap<>();
@@ -222,7 +308,7 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     public String getDataFromServer(Uri builtUri) {
-        Log.d(LOG_TAG, "getting data from server");
+//        Log.d(LOG_TAG, "getting data from server");
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -270,6 +356,44 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
         return null;
     }
 
+    public String getDataFromApp(String filePath) {
+//        Log.d(LOG_TAG, "getting data from app");
+        String jsonOutputFile = readFileContents(filePath);
+        if (jsonOutputFile.length() == 0) {
+            return null;
+        }
+        return jsonOutputFile;
+    }
+
+
+    public String readFileContents(String filePath) {
+
+        StringBuilder fileContent = new StringBuilder();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(
+                    new InputStreamReader(context.getAssets().open(filePath)));
+
+            String mLine;
+            while ((mLine = reader.readLine()) != null) {
+                fileContent.append(mLine);
+            }
+        } catch (IOException e) {
+//            Log.d("Error reading file", e.getMessage().toString());
+            //log the exception
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    //log the exception
+                }
+            }
+        }
+        return fileContent.toString();
+
+    }
+
 
     public static void syncImmediately(Context context) {
         Bundle bundle = new Bundle();
@@ -277,6 +401,10 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(getSyncAccount(context),
                 context.getString(R.string.content_authority), bundle);
+    }
+
+    public static void syncLocally(Context context) {
+        new InterviewSyncAdapter(context,true).onLocalPerformSync();
     }
 
     public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {

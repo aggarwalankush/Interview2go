@@ -22,7 +22,6 @@ import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,12 +46,12 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
-        InterviewSyncAdapter.initializeSyncAdapter(this);
+//        InterviewSyncAdapter.initializeSyncAdapter(this);
 
-        Log.d(LOG_TAG, new InterviewSyncAdapter(this, true).isEmptyDB() + "");
+//        Log.d(LOG_TAG, new InterviewSyncAdapter(this, true).isEmptyDB() + "");
 
         if (new InterviewSyncAdapter(this, true).isEmptyDB()) {
-            InterviewSyncAdapter.syncImmediately(this);
+            InterviewSyncAdapter.syncLocally(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
