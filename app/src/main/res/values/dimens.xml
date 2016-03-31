@@ -6,6 +6,7 @@
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="list_icon">40dp</dimen>
     <dimen name="forward_icon">20dp</dimen>
+    <dimen name="question_detail_icon">30dp</dimen>
 
     <dimen name="nav_header_vertical_spacing">14dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
