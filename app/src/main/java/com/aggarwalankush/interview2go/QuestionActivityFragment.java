@@ -89,6 +89,7 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
             if (mUri == null) {
                 mUri = oldUri;
             }
+
         }
 
         final View rootView = inflater.inflate(R.layout.fragment_question, container, false);
