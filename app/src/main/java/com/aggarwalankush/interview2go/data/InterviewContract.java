@@ -18,6 +18,7 @@ public class InterviewContract {
         public static final String COLUMN_ROW_NO = "row_no";
         public static final String COLUMN_TOPIC = "topic";
         public static final String COLUMN_QUESTION = "question";
+        public static final String COLUMN_QUESTION_DETAIL = "question_detail";
         public static final String COLUMN_SOLUTION = "solution";
         public static final String COLUMN_DARK_SOLUTION = "dark_solution";
         public static final String COLUMN_OUTPUT = "output";
@@ -44,6 +45,7 @@ public class InterviewContract {
         public static Uri buildTopicWithQuestion(String topic, String question) {
             return CONTENT_URI.buildUpon().appendPath(topic).appendPath(question).build();
         }
+
 
         public static String getTopicFromUri(Uri uri) {
             return uri.getPathSegments().get(1);

@@ -49,6 +49,10 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHol
         mCursor.moveToPosition(position);
         String question = mCursor.getString(QuestionActivityFragment.COL_QUESTION);
         questionAdapterViewHolder.mQuestionView.setText(question);
+        String questionDetail = mCursor.getString(QuestionActivityFragment.COL_QUESTION_DETAIL);
+        String[] str = questionDetail.split("\n");
+        questionAdapterViewHolder.mQuestionDetailView.setLines(str.length + 2);
+        questionAdapterViewHolder.mQuestionDetailView.setText(questionDetail);
         String topic = mCursor.getString(QuestionActivityFragment.COL_TOPIC);
         questionAdapterViewHolder.mIconView.setImageResource(Utility.getImageResouce(topic));
     }
@@ -74,6 +78,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHol
     public class QuestionAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView mQuestionView;
         public final ImageView mIconView;
+        public final ImageView mQuestionIconView;
         public final TextView mQuestionDetailView;
         public final LinearLayout mQuestionDetailLinearLayout;
         public final FrameLayout mQuestionIconLayout;
@@ -81,6 +86,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHol
         public QuestionAdapterViewHolder(View view) {
             super(view);
             mIconView = (ImageView) view.findViewById(R.id.list_item_icon);
+            mQuestionIconView = (ImageView) view.findViewById(R.id.question_expand_collapse);
             mQuestionView = (TextView) view.findViewById(R.id.tv_question);
             mQuestionDetailView = (TextView) view.findViewById(R.id.tv_question_detail);
             mQuestionDetailLinearLayout = (LinearLayout) view.findViewById(R.id.ll_question_detail);
@@ -90,10 +96,12 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapterViewHol
             mQuestionIconLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mQuestionDetailLinearLayout.getVisibility()==View.GONE){
+                    if (mQuestionDetailLinearLayout.getVisibility() == View.GONE) {
                         expand();
-                    }else{
+                        mQuestionIconView.setImageResource(R.drawable.collapse);
+                    } else {
                         collapse();
+                        mQuestionIconView.setImageResource(R.drawable.expand);
                     }
                 }
             });

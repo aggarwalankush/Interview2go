@@ -56,17 +56,17 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/forward_content_desc"
                 android:gravity="end"
-                android:src="@drawable/question_detail"/>
+                android:src="@drawable/expand"
+                android:id="@+id/question_expand_collapse"/>
             </FrameLayout>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="#646464"
             android:gravity="center_vertical"
-            android:minHeight="?android:attr/listPreferredItemHeight"
             android:orientation="horizontal"
             android:paddingEnd="?android:attr/listPreferredItemPaddingRight"
             android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
@@ -76,11 +76,14 @@
 
             <TextView
                 android:id="@+id/tv_question_detail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="hello how are you"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:text="Click here to view solution"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="#fff"/>
+                android:textColor="#fff"
+                android:maxLines="50" android:singleLine="false"
+                />
 
         </LinearLayout>
     </LinearLayout>

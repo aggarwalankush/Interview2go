@@ -8,7 +8,7 @@ import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
 
 public class InterviewDbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     static final String DATABASE_NAME = "interview.db";
 
@@ -18,7 +18,6 @@ public class InterviewDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         final String SQL_CREATE_INTERVIEW_TABLE =
                 "CREATE TABLE " + InterviewEntry.TABLE_NAME + " ("
                         + InterviewEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -26,6 +25,7 @@ public class InterviewDbHelper extends SQLiteOpenHelper {
                         + InterviewEntry.COLUMN_TOPIC + " TEXT NOT NULL, "
                         + InterviewEntry.COLUMN_QUESTION + " TEXT NOT NULL, "
                         + InterviewEntry.COLUMN_SOLUTION + " TEXT NOT NULL DEFAULT '', "
+                        + InterviewEntry.COLUMN_QUESTION_DETAIL + " TEXT DEFAULT 'Click here to view Solution', "
                         + InterviewEntry.COLUMN_DARK_SOLUTION + " TEXT NOT NULL DEFAULT '', "
                         + InterviewEntry.COLUMN_OUTPUT + " TEXT NOT NULL, "
                         + InterviewEntry.COLUMN_BOOKMARK + " INTEGER DEFAULT 0, "
@@ -39,8 +39,15 @@ public class InterviewDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + InterviewEntry.TABLE_NAME);
-        onCreate(db);
+        switch (newVersion) {
+            case 2:
+                db.execSQL("ALTER TABLE " + InterviewEntry.TABLE_NAME + " ADD COLUMN " + InterviewEntry.COLUMN_QUESTION_DETAIL + " TEXT DEFAULT 'Click here to view Solution'");
+                break;
+            case 1:
+            default:
+                db.execSQL("DROP TABLE IF EXISTS " + InterviewEntry.TABLE_NAME);
+                onCreate(db);
+        }
     }
 
 }

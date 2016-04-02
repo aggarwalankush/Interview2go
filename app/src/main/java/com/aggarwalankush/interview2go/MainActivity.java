@@ -46,11 +46,7 @@ public class MainActivity extends AppCompatActivity implements TopicFragment.Cal
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
-//        InterviewSyncAdapter.initializeSyncAdapter(this);
-
-//        Log.d(LOG_TAG, new InterviewSyncAdapter(this, true).isEmptyDB() + "");
-
-        if (new InterviewSyncAdapter(this, true).isEmptyDB()) {
+        if (new InterviewSyncAdapter(this, true).isEmptyDB() || !new InterviewSyncAdapter(this, true).haveDetailColumn()) {
             InterviewSyncAdapter.syncLocally(this);
         }
 

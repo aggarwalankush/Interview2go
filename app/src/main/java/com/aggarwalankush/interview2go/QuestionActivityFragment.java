@@ -48,12 +48,14 @@ public class QuestionActivityFragment extends Fragment implements LoaderManager.
     private static final String[] QUESTION_COLUMNS = {
             InterviewEntry._ID,
             InterviewEntry.COLUMN_TOPIC,
-            InterviewEntry.COLUMN_QUESTION
+            InterviewEntry.COLUMN_QUESTION,
+            InterviewEntry.COLUMN_QUESTION_DETAIL
     };
 
     public static final int COL_ID = 0;
     public static final int COL_TOPIC = 1;
     public static final int COL_QUESTION = 2;
+    public static final int COL_QUESTION_DETAIL = 3;
 
     //topic = ? AND question = ?
     private static final String sTopicAndQuestion =

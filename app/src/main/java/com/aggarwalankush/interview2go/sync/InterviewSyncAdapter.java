@@ -14,10 +14,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.aggarwalankush.interview2go.R;
 import com.aggarwalankush.interview2go.TopicFragment;
 import com.aggarwalankush.interview2go.data.InterviewContract.InterviewEntry;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -28,7 +30,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -72,28 +73,31 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
                 .appendPath(SERVER_OUTPUT_FILE)
                 .build();
         String outputJsonStr = getDataFromServer(outputJsonUri);
-        topicToQueToOutput = jsonToMap(outputJsonStr);
+        String[][] topicQuesDetailOutput = jsonToArray(outputJsonStr);
 
-
-        for (Entry<String, TreeMap<String, String>> stringTreeMapEntry : topicToQueToOutput.entrySet()) {
-            String topic = stringTreeMapEntry.getKey();
-            for (Entry<String, String> quesToOutputEntry : stringTreeMapEntry.getValue().entrySet()) {
-                String question = quesToOutputEntry.getKey();
-                String output = quesToOutputEntry.getValue();
-
-                count++;
-                // adding values to content values
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(InterviewEntry.COLUMN_ROW_NO, count);
-                contentValues.put(InterviewEntry.COLUMN_TOPIC, topic.toLowerCase());
-                contentValues.put(InterviewEntry.COLUMN_QUESTION, question);
-                contentValues.put(InterviewEntry.COLUMN_OUTPUT, output);
-                cVVector.add(contentValues);
-
-                // update progress bar
-                updateProgressBar();
+        for (String[] array : topicQuesDetailOutput) {
+            if (array.length < 4) {
+                continue;
             }
+            String topic = array[0];
+            String question = array[1];
+            String detail = array[2];
+            String output = array[3];
+
+            count++;
+            // adding values to content values
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(InterviewEntry.COLUMN_ROW_NO, count);
+            contentValues.put(InterviewEntry.COLUMN_TOPIC, topic.toLowerCase());
+            contentValues.put(InterviewEntry.COLUMN_QUESTION, question);
+            contentValues.put(InterviewEntry.COLUMN_QUESTION_DETAIL, detail);
+            contentValues.put(InterviewEntry.COLUMN_OUTPUT, output);
+            cVVector.add(contentValues);
+
+            // update progress bar
+            updateProgressBar();
         }
+
 
         // insert into database
         if (cVVector.size() > 0) {
@@ -105,102 +109,107 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
 
         ////////
 
-        for (Entry<String, TreeMap<String, String>> stringTreeMapEntry : topicToQueToOutput.entrySet()) {
-            String topic = stringTreeMapEntry.getKey();
-            for (Entry<String, String> quesToOutputEntry : stringTreeMapEntry.getValue().entrySet()) {
-                String question = quesToOutputEntry.getKey();
-                String solution = "Invalid Solution";
-                String darkSolution = "Invalid Solution";
-                int bookmark = getBookmark(topic, question);
-                int done = getDone(topic, question);
-
-                // light solution handling
-                Uri lightSolutionUri = Uri.parse(SERVER_BASE_URL).buildUpon()
-                        .appendPath(SERVER_LIGHT_SOLUTION)
-                        .appendPath(topic)
-                        .appendPath(question)
-                        .build();
-                String light_solution = getDataFromServer(lightSolutionUri);
-                if (null != light_solution) {
-                    solution = light_solution;
-                }
-
-                // dark solution handling
-                Uri darkSolutionUri = Uri.parse(SERVER_BASE_URL).buildUpon()
-                        .appendPath(SERVER_DARK_SOLUTION)
-                        .appendPath(topic)
-                        .appendPath(question)
-                        .build();
-                String dark_solution = getDataFromServer(darkSolutionUri);
-                if (null != dark_solution) {
-                    darkSolution = dark_solution;
-                }
-
-
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(InterviewEntry.COLUMN_SOLUTION, solution);
-                contentValues.put(InterviewEntry.COLUMN_DARK_SOLUTION, darkSolution);
-                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, bookmark);
-                contentValues.put(InterviewEntry.COLUMN_DONE, done);
-
-                getContext().getContentResolver().update(
-                        InterviewEntry.CONTENT_URI,
-                        contentValues,
-                        sTopicAndQuestion,
-                        new String[]{topic.toLowerCase(), question}
-                );
-
+        for (String[] array : topicQuesDetailOutput) {
+            if (array.length < 4) {
+                continue;
             }
+            String topic = array[0];
+            String question = array[1];
+            String solution = "Invalid Solution";
+            String darkSolution = "Invalid Solution";
+            int bookmark = getBookmark(topic, question);
+            int done = getDone(topic, question);
+
+            // light solution handling
+            Uri lightSolutionUri = Uri.parse(SERVER_BASE_URL).buildUpon()
+                    .appendPath(SERVER_LIGHT_SOLUTION)
+                    .appendPath(topic)
+                    .appendPath(question)
+                    .build();
+            String light_solution = getDataFromServer(lightSolutionUri);
+            if (null != light_solution) {
+                solution = light_solution;
+            }
+
+            // dark solution handling
+            Uri darkSolutionUri = Uri.parse(SERVER_BASE_URL).buildUpon()
+                    .appendPath(SERVER_DARK_SOLUTION)
+                    .appendPath(topic)
+                    .appendPath(question)
+                    .build();
+            String dark_solution = getDataFromServer(darkSolutionUri);
+            if (null != dark_solution) {
+                darkSolution = dark_solution;
+            }
+
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(InterviewEntry.COLUMN_SOLUTION, solution);
+            contentValues.put(InterviewEntry.COLUMN_DARK_SOLUTION, darkSolution);
+            contentValues.put(InterviewEntry.COLUMN_BOOKMARK, bookmark);
+            contentValues.put(InterviewEntry.COLUMN_DONE, done);
+
+            getContext().getContentResolver().update(
+                    InterviewEntry.CONTENT_URI,
+                    contentValues,
+                    sTopicAndQuestion,
+                    new String[]{topic.toLowerCase(), question}
+            );
         }
-//////
+
+        //////
+
     }
 
 
     public void onLocalPerformSync() {
         int count = 0;
-        TreeMap<String, TreeMap<String, String>> topicToQueToOutput;
         Vector<ContentValues> cVVector = new Vector<>();
 
         String outputJsonStr = getDataFromApp("Output.json");
-        topicToQueToOutput = jsonToMap(outputJsonStr);
+        String[][] topicQuesDetailOutput = jsonToArray(outputJsonStr);
 
-
-        for (Entry<String, TreeMap<String, String>> stringTreeMapEntry : topicToQueToOutput.entrySet()) {
-            String topic = stringTreeMapEntry.getKey();
-            for (Entry<String, String> quesToOutputEntry : stringTreeMapEntry.getValue().entrySet()) {
-                String question = quesToOutputEntry.getKey();
-                String output = quesToOutputEntry.getValue();
-                String solution = "Invalid Solution";
-                String darkSolution = "Invalid Solution";
-                int bookmark = getBookmark(topic, question);
-                int done = getDone(topic, question);
-
-                String light_solution = getDataFromApp("LightModeHtml/" + topic + "/" + question);
-                if (null != light_solution) {
-                    solution = light_solution;
-                }
-
-                String dark_solution = getDataFromApp("DarkModeHtml/"+topic+"/"+question);
-                if (null != dark_solution) {
-                    darkSolution = dark_solution;
-                }
-                count++;
-                // adding values to content values
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(InterviewEntry.COLUMN_ROW_NO, count);
-                contentValues.put(InterviewEntry.COLUMN_TOPIC, topic.toLowerCase());
-                contentValues.put(InterviewEntry.COLUMN_QUESTION, question);
-                contentValues.put(InterviewEntry.COLUMN_SOLUTION, solution);
-                contentValues.put(InterviewEntry.COLUMN_DARK_SOLUTION, darkSolution);
-                contentValues.put(InterviewEntry.COLUMN_OUTPUT, output);
-                contentValues.put(InterviewEntry.COLUMN_BOOKMARK, bookmark);
-                contentValues.put(InterviewEntry.COLUMN_DONE, done);
-                cVVector.add(contentValues);
-
-                // update progress bar
-                updateProgressBar();
+        for (String[] array : topicQuesDetailOutput) {
+            if (array.length < 4) {
+                continue;
             }
+            String topic = array[0];
+            String question = array[1];
+            String detail = array[2];
+            String output = array[3];
+
+            String solution = "Invalid Solution";
+            String darkSolution = "Invalid Solution";
+            int bookmark = getBookmark(topic, question);
+            int done = getDone(topic, question);
+
+            String light_solution = getDataFromApp("LightModeHtml/" + topic + "/" + question);
+            if (null != light_solution) {
+                solution = light_solution;
+            }
+
+            String dark_solution = getDataFromApp("DarkModeHtml/" + topic + "/" + question);
+            if (null != dark_solution) {
+                darkSolution = dark_solution;
+            }
+            count++;
+            // adding values to content values
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(InterviewEntry.COLUMN_ROW_NO, count);
+            contentValues.put(InterviewEntry.COLUMN_TOPIC, topic.toLowerCase());
+            contentValues.put(InterviewEntry.COLUMN_QUESTION, question);
+            contentValues.put(InterviewEntry.COLUMN_SOLUTION, solution);
+            contentValues.put(InterviewEntry.COLUMN_QUESTION_DETAIL, detail);
+            contentValues.put(InterviewEntry.COLUMN_DARK_SOLUTION, darkSolution);
+            contentValues.put(InterviewEntry.COLUMN_OUTPUT, output);
+            contentValues.put(InterviewEntry.COLUMN_BOOKMARK, bookmark);
+            contentValues.put(InterviewEntry.COLUMN_DONE, done);
+            cVVector.add(contentValues);
+
+            // update progress bar
+            updateProgressBar();
         }
+
 
         // insert into database
         if (cVVector.size() > 0) {
@@ -212,25 +221,22 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
 
-
-
-    public TreeMap<String, TreeMap<String, String>> jsonToMap(String outputJsonStr) {
-        TreeMap<String, TreeMap<String, String>> topicToQueToOutput = new TreeMap<>();
+    public String[][] jsonToArray(String outputJsonStr) {
+        String[][] topicQuesDetailOutput = new String[100][];
         JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = jsonParser.parse(outputJsonStr).getAsJsonObject();
+        JsonArray jsonArray = jsonParser.parse(outputJsonStr).getAsJsonArray();
+        int i = 0;
+        for (JsonElement element : jsonArray) {
 
-        for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-            String topic = entry.getKey();
-            JsonObject quesSolObj = jsonParser.parse(entry.getValue().getAsString()).getAsJsonObject();
-            TreeMap<String, String> quesToOutput = new TreeMap<>();
-            for (Entry<String, JsonElement> quesOutputEntry : quesSolObj.entrySet()) {
-                String question = quesOutputEntry.getKey();
-                String solution = quesOutputEntry.getValue().getAsString();
-                quesToOutput.put(question, solution);
-            }
-            topicToQueToOutput.put(topic, quesToOutput);
+            JsonObject jsonObject = element.getAsJsonObject();
+            String topic = jsonObject.get("topic").getAsString();
+            String question = jsonObject.get("question").getAsString();
+            String detail = jsonObject.get("detail").getAsString();
+            String output = jsonObject.get("solution").getAsString();
+            Log.d(LOG_TAG, topic);
+            topicQuesDetailOutput[i++] = new String[]{topic, question, detail, output};
         }
-        return topicToQueToOutput;
+        return topicQuesDetailOutput;
     }
 
 
@@ -252,19 +258,29 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public int getBookmark(String topic, String question) {
         int bookmark = 0;
-        if (!isEmptyDB()) {
+        try {
+//            SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+//            queryBuilder.setTables(InterviewEntry.OLD_TABLE_NAME);
+//            Cursor cursor = queryBuilder.query(new InterviewDbHelper(
+//                            getContext()).getReadableDatabase(),
+//                    new String[]{InterviewEntry.COLUMN_BOOKMARK, InterviewEntry.COLUMN_TOPIC, InterviewEntry.COLUMN_QUESTION},
+//                    InterviewEntry.COLUMN_TOPIC + " = ? AND " + InterviewEntry.COLUMN_QUESTION + " = ? ",
+//                    new String[]{topic.toLowerCase(), question}, null, null, null);
             Cursor cursor = getContext().getContentResolver().query(
-                    InterviewEntry.buildTopicWithQuestion(topic, question),
+                    InterviewEntry.buildTopicWithQuestion(topic.toLowerCase(), question),
                     new String[]{InterviewEntry.COLUMN_BOOKMARK},
                     null,
                     null,
                     null
             );
+//            Log.d("hellocursor", DatabaseUtils.dumpCursorToString(cursor));
             if ((cursor != null) && (cursor.getCount() > 0)) {
                 cursor.moveToFirst();
                 bookmark = cursor.getInt(0);
                 cursor.close();
             }
+        } catch (Exception e) {
+            return bookmark;
         }
         return bookmark;
     }
@@ -273,7 +289,7 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
         int done = 0;
         if (!isEmptyDB()) {
             Cursor cursor = getContext().getContentResolver().query(
-                    InterviewEntry.buildTopicWithQuestion(topic, question),
+                    InterviewEntry.buildTopicWithQuestion(topic.toLowerCase(), question),
                     new String[]{InterviewEntry.COLUMN_DONE},
                     null,
                     null,
@@ -286,6 +302,34 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
         return done;
+    }
+
+    public boolean haveDetailColumn() {
+        try {
+            String detail;
+            if (!isEmptyDB()) {
+                Cursor cursor = getContext().getContentResolver().query(
+                        InterviewEntry.CONTENT_URI,
+                        new String[]{InterviewEntry.COLUMN_QUESTION_DETAIL},
+                        null,
+                        null,
+                        null
+                );
+                if ((cursor != null) && (cursor.getCount() > 0)) {
+                    cursor.moveToFirst();
+                    detail = cursor.getString(0);
+                    cursor.close();
+                    if (detail.equalsIgnoreCase("Click here to view Solution")) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
     }
 
     public boolean isEmptyDB() {
@@ -404,7 +448,7 @@ public class InterviewSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     public static void syncLocally(Context context) {
-        new InterviewSyncAdapter(context,true).onLocalPerformSync();
+        new InterviewSyncAdapter(context, true).onLocalPerformSync();
     }
 
     public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
