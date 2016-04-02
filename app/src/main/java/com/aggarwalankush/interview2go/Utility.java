@@ -213,6 +213,7 @@ public class Utility {
             while (cursor.moveToNext()) {
                 count+=cursor.getInt(1);
             }
+            cursor.close();
         }
         return count+"";
     }
