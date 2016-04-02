@@ -202,7 +202,7 @@ public class Utility {
     public static String getQuestionsCount(Context context, String type) {
         Cursor cursor = context.getContentResolver().query(
                 InterviewEntry.CONTENT_URI,
-                new String[]{"count(" + InterviewEntry.COLUMN_TOPIC + ") AS total"},
+                new String[]{InterviewEntry._ID,"count(" + InterviewEntry.COLUMN_TOPIC + ") AS total"},
                 type + " = ? ",
                 new String[]{"1"},
                 null
@@ -211,7 +211,7 @@ public class Utility {
         int count = 0;
         if (null != cursor) {
             while (cursor.moveToNext()) {
-                count+=cursor.getInt(0);
+                count+=cursor.getInt(1);
             }
         }
         return count+"";
